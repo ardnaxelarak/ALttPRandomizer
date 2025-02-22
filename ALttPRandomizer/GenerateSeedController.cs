@@ -3,10 +3,17 @@
     using Microsoft.AspNetCore.Mvc;
 
     public class GenerateController : Controller {
+        public GenerateController(Randomizer randomizer) {
+            this.Randomizer = randomizer;
+        }
+
+        private Randomizer Randomizer { get; }
+
         [Route("/generate")]
         [HttpPost]
         public ActionResult Generate(SeedSettings settings) {
-            return Content("Hello world");
+            var result = this.Randomizer.Randomize();
+            return Content(result);
         }
     }
 }
