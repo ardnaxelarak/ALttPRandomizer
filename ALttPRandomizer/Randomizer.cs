@@ -1,26 +1,25 @@
 ﻿namespace ALttPRandomizer {
+    using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
-    using Azure.Storage.Blobs;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
 
     public class Randomizer {
         public Randomizer(
-            IdGenerator idGenerator,
-            BlobContainerClient seedClient,
-            IOptionsMonitor<ServiceOptions> optionsMonitor,
-            ILogger<Randomizer> logger) {
+                IdGenerator idGenerator,
+                AzureStorage azureStorage,
+                IOptionsMonitor<ServiceOptions> optionsMonitor,
+                ILogger<Randomizer> logger) {
             this.IdGenerator = idGenerator;
-            this.SeedClient = seedClient;
+            this.AzureStorage = azureStorage;
             this.OptionsMonitor = optionsMonitor;
             this.Logger = logger;
         }
 
-        private BlobContainerClient SeedClient { get; }
+        private AzureStorage AzureStorage { get; }
         private IOptionsMonitor<ServiceOptions> OptionsMonitor { get; }
         private IdGenerator IdGenerator { get; }
         private ILogger<Randomizer> Logger { get; }
@@ -81,24 +80,15 @@
             var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("DR_{0}_Spoiler.txt", id));
             var spoilerOut = string.Format("{0}/spoiler.txt", id);
 
-            var uploadPatch = UploadFile(bpsOut, bpsIn);
-            var uploadSpoiler = UploadFile(spoilerOut, spoilerIn);
+            var uploadPatch = this.AzureStorage.UploadFileAndDelete(bpsOut, bpsIn);
+            var uploadSpoiler = this.AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
 
             await Task.WhenAll(uploadPatch, uploadSpoiler);
 
+            this.Logger.LogDebug("Deleting file {filepath}", rom);
             File.Delete(rom);
 
             this.Logger.LogDebug("Finished uploading seed id {id}", id);
-        }
-
-        private async Task UploadFile(string name, string filepath) {
-            using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read)) {
-                this.Logger.LogDebug("Uploading file {filepath} -> {name}", filepath, name);
-                await this.SeedClient.UploadBlobAsync(name, stream);
-            }
-
-            this.Logger.LogDebug("Deleting file {filepath}", filepath);
-            File.Delete(filepath);
         }
 
         private void GenerationFailed(string id, int exitcode) {

@@ -1,9 +1,11 @@
 ﻿namespace ALttPRandomizer
 {
     using System.Text.Json.Serialization;
+    using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
-    using Azure.Identity;
-    using Azure.Storage.Blobs;
+    using ALttPRandomizer.Service;
+    using global::Azure.Identity;
+    using global::Azure.Storage.Blobs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -36,8 +38,10 @@
             var seedClient = new BlobContainerClient(settings.AzureSettings.BlobstoreEndpoint, token);
 
             builder.Services.AddSingleton(seedClient);
-            builder.Services.AddScoped<Randomizer, Randomizer>();
-            builder.Services.AddScoped<IdGenerator, IdGenerator>();
+            builder.Services.AddSingleton<AzureStorage>();
+            builder.Services.AddScoped<Randomizer>();
+            builder.Services.AddScoped<SeedService>();
+            builder.Services.AddScoped<IdGenerator>();
 
             var app = builder.Build();
 

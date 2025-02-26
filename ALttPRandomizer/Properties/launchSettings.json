@@ -1,0 +1,9 @@
+﻿{
+  "profiles": {
+    "https": {
+      "applicationUrl": "localhost:5000/swagger",
+      "commandName": "Project",
+      "launchBrowser": true
+    }
+  }
+}
