@@ -4,6 +4,7 @@
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
     using ALttPRandomizer.Service;
+    using global::Azure.Core;
     using global::Azure.Identity;
     using global::Azure.Storage.Blobs;
     using Microsoft.AspNetCore.Builder;
@@ -20,7 +21,7 @@
 
             builder.Configuration
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.Development.json")
+                .AddJsonFile("appsettings.Development.json", true)
                 .AddEnvironmentVariables();
 
             builder.Services.Configure<ServiceOptions>(builder.Configuration.GetSection("ALttPRandomizer"));
@@ -34,7 +35,13 @@
             var provider = builder.Services.BuildServiceProvider();
             var settings = provider.GetRequiredService<IOptionsMonitor<ServiceOptions>>().CurrentValue!;
 
-            var token = new DefaultAzureCredential();
+            var options = new DefaultAzureCredentialOptions();
+            
+            if (settings.AzureSettings.ClientId != null) {
+                options.ManagedIdentityClientId = new(settings.AzureSettings.ClientId);
+            }
+
+            var token = new DefaultAzureCredential(options);
             var seedClient = new BlobContainerClient(settings.AzureSettings.BlobstoreEndpoint, token);
 
             builder.Services.AddSingleton(seedClient);

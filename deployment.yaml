@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alttpr-backend
+spec:
+  selector:
+    matchLabels:
+      app: alttpr-backend
+  template:
+    metadata:
+      labels:
+        app: alttpr-backend
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: alttpr-backend
+          image: alttpracr.azurecr.io/alttpr-backend
+          ports:
+            - containerPort: 8080
+              name: http

@@ -1,0 +1,10 @@
+ALttPRandomizer/appsettings.json
+ALttPRandomizer/appsettings.Development.json
+ALttPRandomizer/[Oo]bj
+ALttPRandomizer/[Bb]in
+
+*/__pycache__
+*/.github
+*/_vendor
+ALttPDoorRandomizer/DR_*
+ALttPDoorRandomizer/data/base2current.json

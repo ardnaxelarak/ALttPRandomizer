@@ -37,7 +37,8 @@
 
             var args = start.ArgumentList;
             args.Add("DungeonRandomizer.py");
-            args.Add("--rom=../alttp.sfc");
+            args.Add("--rom");
+            args.Add(this.Configuration.Baserom);
             args.Add("--bps");
 
             args.Add("--outputpath");
