@@ -28,12 +28,21 @@
 
             builder.Services.AddLogging(lb => lb.AddConsole());
 
+            var provider = builder.Services.BuildServiceProvider();
+            var settings = provider.GetRequiredService<IOptionsMonitor<ServiceOptions>>().CurrentValue!;
+            var logger = provider.GetRequiredService<ILogger<Program>>();
+
+            builder.Services.AddCors(options => {
+                options.AddPolicy("AllowDomains", policy => {
+                    foreach (var domain in settings.AllowedCors) {
+                        policy.WithOrigins(domain);
+                    }
+                });
+            });
+
             builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             builder.Services.AddSwaggerGen();
-
-            var provider = builder.Services.BuildServiceProvider();
-            var settings = provider.GetRequiredService<IOptionsMonitor<ServiceOptions>>().CurrentValue!;
 
             var options = new DefaultAzureCredentialOptions();
             
@@ -53,6 +62,7 @@
             var app = builder.Build();
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowDomains");
             app.MapControllers();
             app.UseSwagger();
             app.UseSwaggerUI(c => {
