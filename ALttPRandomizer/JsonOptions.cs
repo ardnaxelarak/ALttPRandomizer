@@ -8,7 +8,7 @@
         }.WithStringEnum();
 
         public static JsonSerializerOptions WithStringEnum(this JsonSerializerOptions options) {
-            options.Converters.Add(new JsonStringEnumConverter());
+            options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower));
             return options;
         }
     }

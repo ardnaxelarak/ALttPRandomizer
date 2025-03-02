@@ -1,6 +1,7 @@
 ﻿namespace ALttPRandomizer.Model {
     using ALttPRandomizer.Settings;
     using System.ComponentModel.DataAnnotations;
+    using System.Text.Json.Serialization;
 
     public class SeedSettings {
         public const string Omit = "<null>";
@@ -10,6 +11,12 @@
         public Weapons Weapons { get; set; } = Weapons.Random;
 
         public Goal Goal { get; set; } = Goal.Ganon;
+
+        [CommonValue("crystals_ganon")]
+        public EntryRequirement CrystalsGanon { get; set; } = EntryRequirement.Crystals7;
+
+        [CommonValue("crystals_gt")]
+        public EntryRequirement CrystalsGT { get; set; } = EntryRequirement.Crystals7;
 
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
         public SkullWoodsShuffle SkullWoods { get; set; } = SkullWoodsShuffle.Original;
@@ -63,6 +70,18 @@
         [CommonValue("triforcehunt")]TriforceHunt,
         GanonHunt,
         Completionist,
+    }
+
+    public enum EntryRequirement {
+        [JsonStringEnumMemberName("7")] [CommonValue("7")] Crystals7,
+        [JsonStringEnumMemberName("6")] [CommonValue("6")] Crystals6,
+        [JsonStringEnumMemberName("5")] [CommonValue("5")] Crystals5,
+        [JsonStringEnumMemberName("4")] [CommonValue("4")] Crystals4,
+        [JsonStringEnumMemberName("3")] [CommonValue("3")] Crystals3,
+        [JsonStringEnumMemberName("2")] [CommonValue("2")] Crystals2,
+        [JsonStringEnumMemberName("1")] [CommonValue("1")] Crystals1,
+        [JsonStringEnumMemberName("0")] [CommonValue("0")] Crystals0,
+        Random,
     }
 
     [CommonValue("shuffle")]
