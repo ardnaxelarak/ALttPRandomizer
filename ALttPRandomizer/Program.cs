@@ -4,7 +4,7 @@
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
     using ALttPRandomizer.Service;
-    using global::Azure.Core;
+    using ALttPRandomizer.Settings;
     using global::Azure.Identity;
     using global::Azure.Storage.Blobs;
     using Microsoft.AspNetCore.Builder;
@@ -55,7 +55,9 @@
 
             builder.Services.AddSingleton(seedClient);
             builder.Services.AddSingleton<AzureStorage>();
+            builder.Services.AddSingleton<CommonSettingsProcessor>();
             builder.Services.AddScoped<Randomizer>();
+            builder.Services.AddScoped<RandomizeService>();
             builder.Services.AddScoped<SeedService>();
             builder.Services.AddScoped<IdGenerator>();
 
