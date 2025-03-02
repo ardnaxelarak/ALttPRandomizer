@@ -108,8 +108,12 @@
         }
 
         private void AddArgs(ICollection<string> args, KeyValuePair<string, string> setting) {
-            if (setting.Value != null && setting.Value != "<null>") {
-                args.Add(string.Format("--{0}={1}", setting.Key, setting.Value));
+            if (setting.Value != null) {
+                if (setting.Value == SeedSettings.NoArg) {
+                    args.Add(string.Format("--{0}", setting.Key));
+                } else if (setting.Value != SeedSettings.Omit) {
+                    args.Add(string.Format("--{0}={1}", setting.Key, setting.Value));
+                }
             }
         }
 

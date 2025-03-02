@@ -5,6 +5,7 @@
 
     public class SeedSettings {
         public const string Omit = "<null>";
+        public const string NoArg = "<noarg>";
 
         public Mode Mode { get; set; } = Mode.Open;
 
@@ -135,7 +136,7 @@
     [CommonValue("shopsanity")]
     public enum ShopShuffle {
         [CommonValue(SeedSettings.Omit)] Vanilla,
-        [CommonValue("true")] Shuffled,
+        [CommonValue(SeedSettings.NoArg)] Shuffled,
     }
 
     public enum DropShuffle {
