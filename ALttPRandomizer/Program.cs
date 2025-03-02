@@ -40,8 +40,7 @@
                 });
             });
 
-            builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.WithStringEnum());
             builder.Services.AddSwaggerGen();
 
             var options = new DefaultAzureCredentialOptions();

@@ -5,9 +5,11 @@
     using ALttPRandomizer.Settings;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     public class Randomizer {
@@ -47,6 +49,8 @@
 
             args.Add("--outputname");
             args.Add(id);
+
+            args.Add("--spoiler=json");
 
             args.Add("--reduce_flashing");
             args.Add("--quickswap");
@@ -95,7 +99,7 @@
                 if (exitcode != 0) {
                     this.GenerationFailed(id, exitcode);
                 } else {
-                    await this.GenerationSucceeded(id);
+                    await this.GenerationSucceeded(id, settings);
                 }
             };
         }
@@ -106,24 +110,55 @@
             }
         }
 
-        private async Task GenerationSucceeded(string id) {
+        private async Task GenerationSucceeded(string id, SeedSettings settings) {
             var rom = Path.Join(Path.GetTempPath(), string.Format("OR_{0}.sfc", id));
 
             var bpsIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}.bps", id));
             var bpsOut = string.Format("{0}/patch.bps", id);
-
-            var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.txt", id));
-            var spoilerOut = string.Format("{0}/spoiler.txt", id);
-
             var uploadPatch = this.AzureStorage.UploadFileAndDelete(bpsOut, bpsIn);
+
+            var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
+            var spoilerOut = string.Format("{0}/spoiler.json", id);
             var uploadSpoiler = this.AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
 
-            await Task.WhenAll(uploadPatch, uploadSpoiler);
+            var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
+            var metaOut = string.Format("{0}/meta.json", id);
+            var meta = this.ProcessMetadata(metaIn);
+            var uploadMeta = this.AzureStorage.UploadFile(metaOut, new BinaryData(meta));
+
+            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
+            var settingsOut = string.Format("{0}/settings.json", id);
+            var uploadSettings = this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+
+            await Task.WhenAll(uploadPatch, uploadSpoiler, uploadMeta, uploadSettings);
+
+            this.Logger.LogDebug("Deleting file {filepath}", metaIn);
+            File.Delete(metaIn);
 
             this.Logger.LogDebug("Deleting file {filepath}", rom);
             File.Delete(rom);
 
             this.Logger.LogDebug("Finished uploading seed id {id}", id);
+        }
+
+        private JsonDocument ProcessMetadata(string path) {
+            JsonDocument orig;
+            using (var file = File.OpenRead(path)) {
+                orig = JsonDocument.Parse(file);
+            }
+
+
+            var processed = new Dictionary<string, JsonElement>();
+            foreach (var toplevel in orig.RootElement.EnumerateObject()) {
+                var value = toplevel.Value;
+                if (value.ValueKind == JsonValueKind.Object && value.TryGetProperty("1", out var p1)) {
+                    processed[toplevel.Name] = p1;
+                } else {
+                    processed[toplevel.Name] = toplevel.Value;
+                }
+            }
+
+            return JsonSerializer.SerializeToDocument(processed, JsonOptions.Default);
         }
 
         private void GenerationFailed(string id, int exitcode) {

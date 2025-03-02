@@ -25,10 +25,10 @@ RUN python3 -m ensurepip --upgrade
 WORKDIR /randomizer
 COPY alttp.sfc .
 
-COPY ALttPDoorRandomizer/resources/app/meta/manifests/pip_requirements.txt requirements.txt
+COPY BaseRandomizer/resources/app/meta/manifests/pip_requirements.txt requirements.txt
 RUN python3 -m pip install -r requirements.txt
 
-COPY ALttPDoorRandomizer/ .
+COPY BaseRandomizer/ .
 
 WORKDIR /app
 COPY --from=build /app/publish .
