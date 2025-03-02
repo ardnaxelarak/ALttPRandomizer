@@ -6,5 +6,7 @@ ALttPRandomizer/[Bb]in
 */__pycache__
 */.github
 */_vendor
-ALttPDoorRandomizer/DR_*
-ALttPDoorRandomizer/data/base2current.json
+*/DR_*
+*/ER_*
+*/OR_*
+*/data/base2current.json

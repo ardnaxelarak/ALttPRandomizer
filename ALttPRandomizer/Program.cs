@@ -26,7 +26,9 @@
 
             builder.Services.Configure<ServiceOptions>(builder.Configuration.GetSection("ALttPRandomizer"));
 
-            builder.Services.AddLogging(lb => lb.AddConsole());
+            builder.Services.AddLogging(logger => {
+                logger.AddConsole();
+            });
 
             var provider = builder.Services.BuildServiceProvider();
             var settings = provider.GetRequiredService<IOptionsMonitor<ServiceOptions>>().CurrentValue!;

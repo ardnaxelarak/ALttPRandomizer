@@ -59,6 +59,9 @@
             this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Weapons));
             this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Goal));
 
+            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.CrystalsGanon), settings.CrystalsGanon));
+            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.CrystalsGT), settings.CrystalsGT));
+
             this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.SmallKeys), settings.SmallKeys));
             this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.BigKeys), settings.BigKeys));
             this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.Maps), settings.Maps));
