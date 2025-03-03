@@ -18,8 +18,8 @@
 
         [Route("/generate")]
         [HttpPost]
-        public ActionResult Generate(SeedSettings settings) {
-            var id = this.RandomizeService.RandomizeSeed(settings);
+        public async Task<ActionResult> Generate(SeedSettings settings) {
+            var id = await this.RandomizeService.RandomizeSeed(settings);
             var url = string.Format("/seed/{0}", id);
             return Accepted(url, id);
         }

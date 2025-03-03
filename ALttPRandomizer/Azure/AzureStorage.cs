@@ -15,6 +15,10 @@
         private ILogger<AzureStorage> Logger { get; }
         private BlobContainerClient BlobClient { get; }
 
+        public async Task DeleteFile(string name) {
+            await BlobClient.DeleteBlobAsync(name);
+        }
+
         public async Task UploadFile(string name, Stream data) {
             await BlobClient.UploadBlobAsync(name, data);
         }
@@ -41,9 +45,6 @@
 
             await foreach (var blob in blobs) {
                 var result = await this.BlobClient.GetBlobClient(blob.Name).DownloadContentAsync();
-                if (result.Value.Details.ContentLength == 0) {
-                    continue;
-                }
 
                 if (!blob.Name.StartsWith(prefix)) {
                     this.Logger.LogWarning("Found prefix mismatch for seed id {seedId}, blob name {blobName}", seedId, blob.Name);

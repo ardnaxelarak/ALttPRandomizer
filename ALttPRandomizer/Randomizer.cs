@@ -30,7 +30,7 @@
         private ILogger<Randomizer> Logger { get; }
         private ServiceOptions Configuration => this.OptionsMonitor.CurrentValue;
 
-        public void Randomize(string id, SeedSettings settings) {
+        public async Task Randomize(string id, SeedSettings settings) {
             this.Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
             var start = new ProcessStartInfo() {
@@ -79,11 +79,20 @@
                 var exitcode = process.ExitCode;
 
                 if (exitcode != 0) {
-                    this.GenerationFailed(id, exitcode);
+                    await this.GenerationFailed(id, exitcode);
                 } else {
                     await this.GenerationSucceeded(id, settings);
                 }
             };
+
+            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
+            var settingsOut = string.Format("{0}/settings.json", id);
+            var uploadSettings = this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+
+            var generating = string.Format("{0}/generating", id);
+            var uploadGenerating = this.AzureStorage.UploadFile(generating, BinaryData.Empty);
+
+            await Task.WhenAll(uploadSettings, uploadGenerating);
         }
 
         private async Task GenerationSucceeded(string id, SeedSettings settings) {
@@ -102,11 +111,10 @@
             var meta = this.ProcessMetadata(metaIn);
             var uploadMeta = this.AzureStorage.UploadFile(metaOut, new BinaryData(meta));
 
-            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
-            var settingsOut = string.Format("{0}/settings.json", id);
-            var uploadSettings = this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            var generating = string.Format("{0}/generating", id);
+            var deleteGenerating = this.AzureStorage.DeleteFile(generating);
 
-            await Task.WhenAll(uploadPatch, uploadSpoiler, uploadMeta, uploadSettings);
+            await Task.WhenAll(uploadPatch, uploadSpoiler, uploadMeta, deleteGenerating);
 
             this.Logger.LogDebug("Deleting file {filepath}", metaIn);
             File.Delete(metaIn);
@@ -123,7 +131,6 @@
                 orig = JsonDocument.Parse(file);
             }
 
-
             var processed = new Dictionary<string, JsonElement>();
             foreach (var toplevel in orig.RootElement.EnumerateObject()) {
                 var value = toplevel.Value;
@@ -137,7 +144,11 @@
             return JsonSerializer.SerializeToDocument(processed, JsonOptions.Default);
         }
 
-        private void GenerationFailed(string id, int exitcode) {
+        private async Task GenerationFailed(string id, int exitcode) {
+            var generating = string.Format("{0}/generating", id);
+            var deleteGenerating = this.AzureStorage.DeleteFile(generating);
+
+            await Task.WhenAll(deleteGenerating);
         }
     }
 }
