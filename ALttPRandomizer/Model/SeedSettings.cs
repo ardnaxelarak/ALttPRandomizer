@@ -4,45 +4,49 @@
     using System.Text.Json.Serialization;
 
     public class SeedSettings {
-        public const string Omit = "<null>";
-        public const string NoArg = "<noarg>";
-
         public Mode Mode { get; set; } = Mode.Open;
 
+        [SettingName("swords")]
         public Weapons Weapons { get; set; } = Weapons.Random;
 
         public Goal Goal { get; set; } = Goal.Ganon;
 
-        [CommonValue("crystals_ganon")]
+        [SettingName("crystals_ganon")]
         public EntryRequirement CrystalsGanon { get; set; } = EntryRequirement.Crystals7;
 
-        [CommonValue("crystals_gt")]
+        [SettingName("crystals_gt")]
         [JsonPropertyName("crystals_gt")]
         public EntryRequirement CrystalsGT { get; set; } = EntryRequirement.Crystals7;
 
+        [SettingName("shuffle")]
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
+        [SettingName("skullwoods")]
         public SkullWoodsShuffle SkullWoods { get; set; } = SkullWoodsShuffle.Original;
+        [SettingName("linked_drops")]
         public LinkedDrops LinkedDrops { get; set; } = LinkedDrops.Unset;
 
+        [SettingName("shufflebosses")]
         public BossShuffle BossShuffle { get; set; } = BossShuffle.Vanilla;
 
+        [SettingName("shuffleenemies")]
         public EnemyShuffle EnemyShuffle { get; set; } = EnemyShuffle.Vanilla;
 
-        [CommonValue("keyshuffle")]
+        [SettingName("keyshuffle")]
         public DungeonItemLocations SmallKeys { get; set; } = DungeonItemLocations.Dungeon;
 
-        [CommonValue("bigkeyshuffle")]
+        [SettingName("bigkeyshuffle")]
         [DeniedValues(DungeonItemLocations.Universal)]
         public DungeonItemLocations BigKeys { get; set; } = DungeonItemLocations.Dungeon;
 
-        [CommonValue("mapshuffle")]
+        [SettingName("mapshuffle")]
         [DeniedValues(DungeonItemLocations.Universal)]
         public DungeonItemLocations Maps { get; set; } = DungeonItemLocations.Dungeon;
 
-        [CommonValue("compassshuffle")]
+        [SettingName("compassshuffle")]
         [DeniedValues(DungeonItemLocations.Universal)]
         public DungeonItemLocations Compasses { get; set; } = DungeonItemLocations.Dungeon;
 
+        [NoSettingName]
         public ShopShuffle ShopShuffle { get; set; } = ShopShuffle.Vanilla;
         public DropShuffle DropShuffle { get; set; } = DropShuffle.Vanilla;
         public Pottery Pottery { get; set; } = Pottery.Vanilla;
@@ -56,7 +60,6 @@
         Inverted,
     }
 
-    [CommonValue("swords")]
     public enum Weapons {
         Random,
         Assured,
@@ -66,36 +69,34 @@
 
     public enum Goal {
         Ganon,
-        [CommonValue("crystals")] FastGanon,
-        [CommonValue("dungeons")] AllDungeons,
+        [SettingName("crystals")] FastGanon,
+        [SettingName("dungeons")] AllDungeons,
         Pedestal,
-        [CommonValue("triforcehunt")]TriforceHunt,
+        [SettingName("triforcehunt")]TriforceHunt,
         GanonHunt,
         Completionist,
     }
 
     public enum EntryRequirement {
-        [JsonStringEnumMemberName("0")] [CommonValue("0")] Crystals0 = 0,
-        [JsonStringEnumMemberName("1")] [CommonValue("1")] Crystals1 = 1,
-        [JsonStringEnumMemberName("2")] [CommonValue("2")] Crystals2 = 2,
-        [JsonStringEnumMemberName("3")] [CommonValue("3")] Crystals3 = 3,
-        [JsonStringEnumMemberName("4")] [CommonValue("4")] Crystals4 = 4,
-        [JsonStringEnumMemberName("5")] [CommonValue("5")] Crystals5 = 5,
-        [JsonStringEnumMemberName("6")] [CommonValue("6")] Crystals6 = 6,
-        [JsonStringEnumMemberName("7")] [CommonValue("7")] Crystals7 = 7,
+        [JsonStringEnumMemberName("0")] [SettingName("0")] Crystals0 = 0,
+        [JsonStringEnumMemberName("1")] [SettingName("1")] Crystals1 = 1,
+        [JsonStringEnumMemberName("2")] [SettingName("2")] Crystals2 = 2,
+        [JsonStringEnumMemberName("3")] [SettingName("3")] Crystals3 = 3,
+        [JsonStringEnumMemberName("4")] [SettingName("4")] Crystals4 = 4,
+        [JsonStringEnumMemberName("5")] [SettingName("5")] Crystals5 = 5,
+        [JsonStringEnumMemberName("6")] [SettingName("6")] Crystals6 = 6,
+        [JsonStringEnumMemberName("7")] [SettingName("7")] Crystals7 = 7,
         Random,
     }
 
-    [CommonValue("shuffle")]
     public enum EntranceShuffle {
         Vanilla,
         Full,
         Crossed,
         Swapped,
-        [CommonValue("insanity")] Decoupled,
+        [SettingName("insanity")] Decoupled,
     }
 
-    [CommonValue("skullwoods")]
     public enum SkullWoodsShuffle {
         Original,
         Restricted,
@@ -103,62 +104,58 @@
         FollowLinked,
     }
 
-    [CommonValue("linked_drops")]
     public enum LinkedDrops {
         Unset,
         Linked,
         Independent,
     }
 
-    [CommonValue("shufflebosses")]
     public enum BossShuffle {
-        [CommonValue("none")] Vanilla,
+        [SettingName("none")] Vanilla,
         Simple,
         Full,
         Random,
-        [CommonValue("unique")] PrizeUnique,
+        [SettingName("unique")] PrizeUnique,
     }
 
-    [CommonValue("shuffleenemies")]
     public enum EnemyShuffle {
-        [CommonValue("none")] Vanilla,
+        [SettingName("none")] Vanilla,
         Shuffled,
         Mimics,
     }
 
     public enum DungeonItemLocations {
-        [CommonValue("none")] Dungeon,
+        [SettingName("none")] Dungeon,
         Wild,
         Nearby,
         Universal,
     }
 
-    [CommonValue("shopsanity")]
     public enum ShopShuffle {
-        [CommonValue(SeedSettings.Omit)] Vanilla,
-        [CommonValue(SeedSettings.NoArg)] Shuffled,
+        Vanilla,
+        [AdditionalSetting("--shopsanity")] Shuffled,
     }
 
     public enum DropShuffle {
-        [CommonValue("none")] Vanilla,
+        [SettingName("none")] Vanilla,
         Keys,
         Underworld,
     }
 
     public enum Pottery {
-        [CommonValue("none")] Vanilla,
-        Keys,
-        Cave,
-        CaveKeys,
-        Reduced,
-        Clustered,
-        NonEmpty,
-        Dungeon,
+        [SettingName("none")] Vanilla,
+        [AdditionalSetting("--colorizepots")] Keys,
+        [AdditionalSetting("--colorizepots")] Cave,
+        [AdditionalSetting("--colorizepots")] CaveKeys,
+        [AdditionalSetting("--colorizepots")] Reduced,
+        [AdditionalSetting("--colorizepots")] Clustered,
+        [AdditionalSetting("--colorizepots")] NonEmpty,
+        [AdditionalSetting("--colorizepots")] Dungeon,
         Lottery,
     }
 
     public enum PrizeShuffle {
-        [CommonValue("none")] Vanilla,
+        [SettingName("none")] Vanilla,
         Dungeon,
         Nearby,
         Wild,

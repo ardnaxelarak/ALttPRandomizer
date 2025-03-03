@@ -55,34 +55,11 @@
             args.Add("--reduce_flashing");
             args.Add("--quickswap");
 
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Mode));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Weapons));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Goal));
+            args.Add("--shufflelinks");
+            args.Add("--shuffletavern");
 
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.CrystalsGanon), settings.CrystalsGanon));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.CrystalsGT), settings.CrystalsGT));
-
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.SmallKeys), settings.SmallKeys));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.BigKeys), settings.BigKeys));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.Maps), settings.Maps));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(nameof(SeedSettings.Compasses), settings.Compasses));
-
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.EntranceShuffle));
-            if (settings.EntranceShuffle != EntranceShuffle.Vanilla) {
-                args.Add("--shufflelinks");
-                args.Add("--shuffletavern");
-            }
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.SkullWoods));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.LinkedDrops));
-
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.BossShuffle));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.EnemyShuffle));
-
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.ShopShuffle));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.DropShuffle));
-            this.AddArgs(args, this.SettingsProcessor.GetSettingPair(settings.Pottery));
-            if (settings.Pottery != Pottery.Vanilla && settings.Pottery != Pottery.Lottery) {
-                args.Add("--colorizepots");
+            foreach (var arg in this.SettingsProcessor.GetSettings(settings)) {
+                args.Add(arg);
             }
 
             this.Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
@@ -105,16 +82,6 @@
                     await this.GenerationSucceeded(id, settings);
                 }
             };
-        }
-
-        private void AddArgs(ICollection<string> args, KeyValuePair<string, string> setting) {
-            if (setting.Value != null) {
-                if (setting.Value == SeedSettings.NoArg) {
-                    args.Add(string.Format("--{0}", setting.Key));
-                } else if (setting.Value != SeedSettings.Omit) {
-                    args.Add(string.Format("--{0}={1}", setting.Key, setting.Value));
-                }
-            }
         }
 
         private async Task GenerationSucceeded(string id, SeedSettings settings) {
