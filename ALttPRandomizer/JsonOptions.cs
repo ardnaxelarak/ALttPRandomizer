@@ -3,7 +3,7 @@
     using System.Text.Json.Serialization;
 
     public static class JsonOptions {
-        public static JsonSerializerOptions Default = new JsonSerializerOptions() {
+        public static JsonSerializerOptions Default = new JsonSerializerOptions(JsonSerializerDefaults.Web) {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
             NumberHandling = JsonNumberHandling.Strict,
         }.WithStringEnum();

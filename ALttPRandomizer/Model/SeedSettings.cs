@@ -4,6 +4,9 @@
     using System.Text.Json.Serialization;
 
     public class SeedSettings {
+        [NoSettingName]
+        public RaceMode Race { get; set; } = RaceMode.Normal;
+
         public Mode Mode { get; set; } = Mode.Open;
 
         [SettingName("swords")]
@@ -52,6 +55,11 @@
         public Pottery Pottery { get; set; } = Pottery.Vanilla;
 
         public PrizeShuffle PrizeShuffle { get; set; } = PrizeShuffle.Vanilla;
+    }
+
+    public enum RaceMode {
+        Normal,
+        [AdditionalSetting("--securerandom")] Race,
     }
 
     public enum Mode {

@@ -31,6 +31,8 @@
         private ServiceOptions Configuration => this.OptionsMonitor.CurrentValue;
 
         public void Randomize(string id, SeedSettings settings) {
+            this.Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
+
             var start = new ProcessStartInfo() {
                 FileName = Configuration.PythonPath,
                 WorkingDirectory = Configuration.RandomizerPath,
@@ -112,7 +114,7 @@
             this.Logger.LogDebug("Deleting file {filepath}", rom);
             File.Delete(rom);
 
-            this.Logger.LogDebug("Finished uploading seed id {id}", id);
+            this.Logger.LogInformation("Finished uploading seed id {id}", id);
         }
 
         private JsonDocument ProcessMetadata(string path) {

@@ -1,6 +1,5 @@
 ﻿namespace ALttPRandomizer
 {
-    using System.Text.Json.Serialization;
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
     using ALttPRandomizer.Service;
@@ -12,6 +11,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Serilog;
 
     internal class Program
     {
@@ -26,8 +26,13 @@
 
             builder.Services.Configure<ServiceOptions>(builder.Configuration.GetSection("ALttPRandomizer"));
 
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
+
             builder.Services.AddLogging(logger => {
-                logger.AddConsole();
+                logger.ClearProviders();
+                logger.AddSerilog();
             });
 
             var provider = builder.Services.BuildServiceProvider();
