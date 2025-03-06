@@ -1,12 +1,18 @@
 ﻿namespace ALttPRandomizer.Model {
+    using ALttPRandomizer.Randomizers;
     using ALttPRandomizer.Settings;
-    using System.ComponentModel.DataAnnotations;
     using System.Text.Json.Serialization;
+
+    using static ALttPRandomizer.Model.RandomizerInstance;
 
     public class SeedSettings {
         [NoSettingName]
+        public RandomizerInstance Randomizer { get; set; } = RandomizerInstance.Base;
+
+        [NoSettingName]
         public RaceMode Race { get; set; } = RaceMode.Normal;
 
+        [ForbiddenSetting([Apr2025], Mode.Inverted)]
         public Mode Mode { get; set; } = Mode.Open;
 
         [SettingName("swords")]
@@ -19,42 +25,73 @@
 
         [SettingName("crystals_gt")]
         [JsonPropertyName("crystals_gt")]
+        [NoSettingName([Apr2025])]
         public EntryRequirement CrystalsGT { get; set; } = EntryRequirement.Crystals7;
 
         [SettingName("shuffle")]
+        [ForbiddenSetting([Apr2025], EntranceShuffle.Swapped)]
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
+
         [SettingName("skullwoods")]
+        [RequiredSetting([Apr2025], SkullWoodsShuffle.Original)]
+        [NoSettingName([Apr2025])]
         public SkullWoodsShuffle SkullWoods { get; set; } = SkullWoodsShuffle.Original;
+
         [SettingName("linked_drops")]
+        [RequiredSetting([Apr2025], LinkedDrops.Unset)]
+        [NoSettingName([Apr2025])]
         public LinkedDrops LinkedDrops { get; set; } = LinkedDrops.Unset;
 
         [SettingName("shufflebosses")]
+        [RequiredSetting([Apr2025], BossShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
         public BossShuffle BossShuffle { get; set; } = BossShuffle.Vanilla;
 
         [SettingName("shuffleenemies")]
+        [RequiredSetting([Apr2025], EnemyShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
         public EnemyShuffle EnemyShuffle { get; set; } = EnemyShuffle.Vanilla;
 
         [SettingName("keyshuffle")]
-        public DungeonItemLocations SmallKeys { get; set; } = DungeonItemLocations.Dungeon;
+        [RequiredSetting([Apr2025], KeyLocations.Dungeon, KeyLocations.Wild)]
+        [NoSettingName([Apr2025])]
+        public KeyLocations SmallKeys { get; set; } = KeyLocations.Dungeon;
 
         [SettingName("bigkeyshuffle")]
-        [DeniedValues(DungeonItemLocations.Universal)]
+        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
+        [NoSettingName([Apr2025])]
         public DungeonItemLocations BigKeys { get; set; } = DungeonItemLocations.Dungeon;
 
         [SettingName("mapshuffle")]
-        [DeniedValues(DungeonItemLocations.Universal)]
+        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
+        [NoSettingName([Apr2025])]
         public DungeonItemLocations Maps { get; set; } = DungeonItemLocations.Dungeon;
 
         [SettingName("compassshuffle")]
-        [DeniedValues(DungeonItemLocations.Universal)]
+        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
+        [NoSettingName([Apr2025])]
         public DungeonItemLocations Compasses { get; set; } = DungeonItemLocations.Dungeon;
 
         [NoSettingName]
+        [RequiredSetting([Apr2025], ShopShuffle.Vanilla)]
         public ShopShuffle ShopShuffle { get; set; } = ShopShuffle.Vanilla;
+
+        [RequiredSetting([Apr2025], DropShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
         public DropShuffle DropShuffle { get; set; } = DropShuffle.Vanilla;
+
+        [RequiredSetting([Apr2025], Pottery.Vanilla)]
+        [NoSettingName([Apr2025])]
         public Pottery Pottery { get; set; } = Pottery.Vanilla;
 
+        [RequiredSetting([Apr2025], PrizeShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
         public PrizeShuffle PrizeShuffle { get; set; } = PrizeShuffle.Vanilla;
+    }
+
+    public enum RandomizerInstance {
+        [RandomizerName(BaseRandomizer.Name)] Base,
+        [RandomizerName(Apr2025Randomizer.Name)] Apr2025,
     }
 
     public enum RaceMode {
@@ -132,11 +169,17 @@
         Mimics,
     }
 
+    public enum KeyLocations {
+        [SettingName("none")] Dungeon,
+        [AdditionalSetting([Apr2025], "--keysanity")] Wild,
+        Nearby,
+        Universal,
+    }
+
     public enum DungeonItemLocations {
         [SettingName("none")] Dungeon,
         Wild,
         Nearby,
-        Universal,
     }
 
     public enum ShopShuffle {
@@ -168,5 +211,4 @@
         Nearby,
         Wild,
     }
-
 }

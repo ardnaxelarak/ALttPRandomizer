@@ -1,7 +1,7 @@
-﻿namespace ALttPRandomizer
-{
+﻿namespace ALttPRandomizer {
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Options;
+    using ALttPRandomizer.Randomizers;
     using ALttPRandomizer.Service;
     using ALttPRandomizer.Settings;
     using global::Azure.Identity;
@@ -12,6 +12,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Serilog;
+    using System;
 
     internal class Program
     {
@@ -60,9 +61,13 @@
             var seedClient = new BlobContainerClient(settings.AzureSettings.BlobstoreEndpoint, token);
 
             builder.Services.AddSingleton(seedClient);
+            builder.Services.AddSingleton(sp => sp);
             builder.Services.AddSingleton<AzureStorage>();
             builder.Services.AddSingleton<CommonSettingsProcessor>();
-            builder.Services.AddScoped<Randomizer>();
+
+            builder.Services.AddKeyedScoped<IRandomizer, BaseRandomizer>(BaseRandomizer.Name);
+            builder.Services.AddKeyedScoped<IRandomizer, Apr2025Randomizer>(Apr2025Randomizer.Name);
+
             builder.Services.AddScoped<RandomizeService>();
             builder.Services.AddScoped<SeedService>();
             builder.Services.AddScoped<IdGenerator>();

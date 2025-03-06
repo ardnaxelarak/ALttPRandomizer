@@ -12,7 +12,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0 AS final
 EXPOSE 8080
 EXPOSE 8081
 
-RUN tdnf install -y python3
+RUN tdnf install -y python3 wget unzip
+RUN wget https://github.com/Alcaro/Flips/releases/download/v198/flips-linux.zip
+RUN unzip flips-linux.zip -d /flips
+RUN rm flips-linux.zip
 
 RUN mkdir -p /randomizer/data
 RUN touch /randomizer/data/base2current.json
@@ -29,6 +32,9 @@ COPY BaseRandomizer/resources/app/meta/manifests/pip_requirements.txt requiremen
 RUN python3 -m pip install -r requirements.txt
 
 COPY BaseRandomizer/ .
+
+WORKDIR /apr2025_randomizer
+COPY Apr2025Randomizer/ .
 
 WORKDIR /app
 COPY --from=build /app/publish .

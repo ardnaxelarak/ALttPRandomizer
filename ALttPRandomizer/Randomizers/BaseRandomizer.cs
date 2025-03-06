@@ -1,4 +1,5 @@
-﻿namespace ALttPRandomizer {
+﻿namespace ALttPRandomizer.Randomizers {
+    using ALttPRandomizer;
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Model;
     using ALttPRandomizer.Options;
@@ -12,30 +13,37 @@
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    public class Randomizer {
-        public Randomizer(
+    public class BaseRandomizer : IRandomizer {
+        public const string Name = "base";
+        public const RandomizerInstance Instance = RandomizerInstance.Base;
+
+        public BaseRandomizer(
                 AzureStorage azureStorage,
                 CommonSettingsProcessor settingsProcessor,
                 IOptionsMonitor<ServiceOptions> optionsMonitor,
-                ILogger<Randomizer> logger) {
-            this.AzureStorage = azureStorage;
-            this.SettingsProcessor = settingsProcessor;
-            this.OptionsMonitor = optionsMonitor;
-            this.Logger = logger;
+                ILogger<BaseRandomizer> logger) {
+            AzureStorage = azureStorage;
+            SettingsProcessor = settingsProcessor;
+            OptionsMonitor = optionsMonitor;
+            Logger = logger;
         }
 
         private CommonSettingsProcessor SettingsProcessor { get; }
         private AzureStorage AzureStorage { get; }
         private IOptionsMonitor<ServiceOptions> OptionsMonitor { get; }
-        private ILogger<Randomizer> Logger { get; }
-        private ServiceOptions Configuration => this.OptionsMonitor.CurrentValue;
+        private ILogger<BaseRandomizer> Logger { get; }
+        private ServiceOptions Configuration => OptionsMonitor.CurrentValue;
+
+        public void Validate(SeedSettings settings) {
+            this.SettingsProcessor.ValidateSettings(Instance, settings);
+        }
 
         public async Task Randomize(string id, SeedSettings settings) {
-            this.Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
+            Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
             var start = new ProcessStartInfo() {
                 FileName = Configuration.PythonPath,
-                WorkingDirectory = Configuration.RandomizerPath,
+                WorkingDirectory = Configuration.RandomizerPaths[Name],
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
@@ -43,7 +51,7 @@
             var args = start.ArgumentList;
             args.Add("DungeonRandomizer.py");
             args.Add("--rom");
-            args.Add(this.Configuration.Baserom);
+            args.Add(Configuration.Baserom);
             args.Add("--bps");
 
             args.Add("--outputpath");
@@ -60,17 +68,17 @@
             args.Add("--shufflelinks");
             args.Add("--shuffletavern");
 
-            foreach (var arg in this.SettingsProcessor.GetSettings(settings)) {
+            foreach (var arg in SettingsProcessor.GetSettings(Instance, settings)) {
                 args.Add(arg);
             }
 
-            this.Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
+            Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
 
             var process = Process.Start(start) ?? throw new GenerationFailedException("Process failed to start.");
             process.EnableRaisingEvents = true;
 
-            process.OutputDataReceived += (_, args) => this.Logger.LogInformation("Randomizer STDOUT: {output}", args.Data);
-            process.ErrorDataReceived += (_, args) => this.Logger.LogInformation("Randomizer STDERR: {output}", args.Data);
+            process.OutputDataReceived += (_, args) => Logger.LogInformation("Randomizer STDOUT: {output}", args.Data);
+            process.ErrorDataReceived += (_, args) => Logger.LogInformation("Randomizer STDERR: {output}", args.Data);
 
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
@@ -79,18 +87,18 @@
                 var exitcode = process.ExitCode;
 
                 if (exitcode != 0) {
-                    await this.GenerationFailed(id, exitcode);
+                    await GenerationFailed(id, exitcode);
                 } else {
-                    await this.GenerationSucceeded(id, settings);
+                    await GenerationSucceeded(id, settings);
                 }
             };
 
             var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
             var settingsOut = string.Format("{0}/settings.json", id);
-            var uploadSettings = this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            var uploadSettings = AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
 
             var generating = string.Format("{0}/generating", id);
-            var uploadGenerating = this.AzureStorage.UploadFile(generating, BinaryData.Empty);
+            var uploadGenerating = AzureStorage.UploadFile(generating, BinaryData.Empty);
 
             await Task.WhenAll(uploadSettings, uploadGenerating);
         }
@@ -100,29 +108,29 @@
 
             var bpsIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}.bps", id));
             var bpsOut = string.Format("{0}/patch.bps", id);
-            var uploadPatch = this.AzureStorage.UploadFileAndDelete(bpsOut, bpsIn);
+            var uploadPatch = AzureStorage.UploadFileAndDelete(bpsOut, bpsIn);
 
             var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
             var spoilerOut = string.Format("{0}/spoiler.json", id);
-            var uploadSpoiler = this.AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
+            var uploadSpoiler = AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
 
             var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
             var metaOut = string.Format("{0}/meta.json", id);
-            var meta = this.ProcessMetadata(metaIn);
-            var uploadMeta = this.AzureStorage.UploadFile(metaOut, new BinaryData(meta));
+            var meta = ProcessMetadata(metaIn);
+            var uploadMeta = AzureStorage.UploadFile(metaOut, new BinaryData(meta));
 
             var generating = string.Format("{0}/generating", id);
-            var deleteGenerating = this.AzureStorage.DeleteFile(generating);
+            var deleteGenerating = AzureStorage.DeleteFile(generating);
 
             await Task.WhenAll(uploadPatch, uploadSpoiler, uploadMeta, deleteGenerating);
 
-            this.Logger.LogDebug("Deleting file {filepath}", metaIn);
+            Logger.LogDebug("Deleting file {filepath}", metaIn);
             File.Delete(metaIn);
 
-            this.Logger.LogDebug("Deleting file {filepath}", rom);
+            Logger.LogDebug("Deleting file {filepath}", rom);
             File.Delete(rom);
 
-            this.Logger.LogInformation("Finished uploading seed id {id}", id);
+            Logger.LogInformation("Finished uploading seed id {id}", id);
         }
 
         private JsonDocument ProcessMetadata(string path) {
@@ -146,7 +154,7 @@
 
         private async Task GenerationFailed(string id, int exitcode) {
             var generating = string.Format("{0}/generating", id);
-            var deleteGenerating = this.AzureStorage.DeleteFile(generating);
+            var deleteGenerating = AzureStorage.DeleteFile(generating);
 
             await Task.WhenAll(deleteGenerating);
         }

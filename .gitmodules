@@ -4,3 +4,6 @@
 [submodule "BaseRandomizer"]
 	path = BaseRandomizer
 	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer
+[submodule "Apr2025Randomizer"]
+	path = Apr2025Randomizer
+	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer

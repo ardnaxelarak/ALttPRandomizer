@@ -1,6 +1,7 @@
 ﻿namespace ALttPRandomizer {
     using ALttPRandomizer.Model;
     using ALttPRandomizer.Service;
+    using ALttPRandomizer.Settings;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
@@ -19,9 +20,13 @@
         [Route("/generate")]
         [HttpPost]
         public async Task<ActionResult> Generate(SeedSettings settings) {
-            var id = await this.RandomizeService.RandomizeSeed(settings);
-            var url = string.Format("/seed/{0}", id);
-            return Accepted(url, id);
+            try {
+                var id = await this.RandomizeService.RandomizeSeed(settings);
+                var url = string.Format("/seed/{0}", id);
+                return Accepted(url, id);
+            } catch (InvalidSettingsException ex) {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Route("/seed/{id}")]
