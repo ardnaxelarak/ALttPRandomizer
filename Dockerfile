@@ -1,5 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-azurelinux3.0 AS build
 
+RUN tdnf install -y wget unzip g++ build-essential
+RUN wget https://github.com/Alcaro/Flips/archive/refs/tags/v198.zip -O flips.zip
+RUN unzip flips.zip -d /flips
+WORKDIR /flips/Flips-198
+ARG TARGET=cli
+RUN ./make-linux.sh
+
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
@@ -12,10 +19,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0 AS final
 EXPOSE 8080
 EXPOSE 8081
 
-RUN tdnf install -y python3 wget unzip
-RUN wget https://github.com/Alcaro/Flips/releases/download/v198/flips-linux.zip
-RUN unzip flips-linux.zip -d /flips
-RUN rm flips-linux.zip
+RUN tdnf install -y python3
+
+RUN mkdir -p /flips
+COPY --from=build /flips/Flips-198/flips /flips/flips
 
 RUN mkdir -p /randomizer/data
 RUN touch /randomizer/data/base2current.json
