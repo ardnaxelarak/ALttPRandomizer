@@ -12,7 +12,8 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Serilog;
-    using System;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     internal class Program
     {
@@ -48,7 +49,11 @@
                 });
             });
 
-            builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.WithStringEnum());
+            builder.Services.AddControllers().AddJsonOptions(x => {
+                x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower, false));
+            });
             builder.Services.AddSwaggerGen();
 
             var options = new DefaultAzureCredentialOptions();
