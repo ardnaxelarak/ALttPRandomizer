@@ -57,6 +57,18 @@
         public string Setting { get; }
     }
 
+    internal class AddStartingItemsAttribute : RandomizerSpecificAttribute {
+        public AddStartingItemsAttribute(params string[] items) : base(null) {
+            this.Items = items;
+        }
+
+        public AddStartingItemsAttribute(RandomizerInstance[] randomizers, params string[] items) : base(randomizers) {
+            this.Items = items;
+        }
+
+        public string[] Items { get; }
+    }
+
     internal class RequiredSettingAttribute : RandomizerSpecificAttribute {
         public RequiredSettingAttribute(params object[] values) : base(null) {
             this.Values = values;

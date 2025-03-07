@@ -89,7 +89,8 @@
         public PrizeShuffle PrizeShuffle { get; set; } = PrizeShuffle.Vanilla;
 
         [NoSettingName]
-        public BootsSettings StartingBoots { get; set; } = BootsSettings.None;
+        [ForbiddenSetting([Apr2025], BootsSettings.Starting)]
+        public BootsSettings Boots { get; set; } = BootsSettings.Normal;
     }
 
     public enum RandomizerInstance {
@@ -216,7 +217,8 @@
     }
 
     public enum BootsSettings {
-        None,
+        Normal,
         [AdditionalSetting("--pseudoboots")] Pseudoboots,
+        [AddStartingItems("Pegasus_Boots")] Starting,
     }
 }

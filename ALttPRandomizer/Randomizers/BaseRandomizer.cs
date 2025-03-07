@@ -74,6 +74,9 @@
 
             Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
 
+            var generating = string.Format("{0}/generating", id);
+            await AzureStorage.UploadFile(generating, BinaryData.Empty);
+
             var process = Process.Start(start) ?? throw new GenerationFailedException("Process failed to start.");
             process.EnableRaisingEvents = true;
 
@@ -95,12 +98,7 @@
 
             var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
             var settingsOut = string.Format("{0}/settings.json", id);
-            var uploadSettings = AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
-
-            var generating = string.Format("{0}/generating", id);
-            var uploadGenerating = AzureStorage.UploadFile(generating, BinaryData.Empty);
-
-            await Task.WhenAll(uploadSettings, uploadGenerating);
+            await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
         }
 
         private async Task GenerationSucceeded(string id, SeedSettings settings) {

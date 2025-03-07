@@ -8,6 +8,7 @@
     public class CommonSettingsProcessor {
         public IEnumerable<string> GetSettings(RandomizerInstance randomizer, SeedSettings settings) {
             var props = typeof(SeedSettings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var starting = new List<string>();
             foreach (var prop in props) {
                 var value = prop.GetValue(settings) ?? throw new SettingsLookupException("settings.{0} not found", prop.Name);
                 var valueFieldName = value.ToString() ?? throw new SettingsLookupException("settings.{0}.ToString() returned null", prop.Name);
@@ -28,6 +29,17 @@
                 foreach (var att in fi.GetCustomAttributes<AdditionalSettingAttribute>().Where(att => att.HasRandomizer(randomizer))) {
                     yield return att.Setting;
                 }
+
+                foreach (var att in fi.GetCustomAttributes<AddStartingItemsAttribute>().Where(att => att.HasRandomizer(randomizer))) {
+                    foreach (var item in att.Items) {
+                        starting.Add(item);
+                    }
+                }
+            }
+
+            if (starting.Count > 0) {
+                yield return "--usestartinventory=true";
+                yield return string.Format("--startinventory={0}", string.Join(",", starting));
             }
         }
 
