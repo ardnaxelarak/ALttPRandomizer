@@ -20,6 +20,9 @@
         [Route("/generate")]
         [HttpPost]
         public async Task<ActionResult> Generate([FromBody] SeedSettings settings) {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
             try {
                 var id = await this.RandomizeService.RandomizeSeed(settings);
                 var url = string.Format("/seed/{0}", id);

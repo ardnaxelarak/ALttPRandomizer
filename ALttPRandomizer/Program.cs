@@ -49,11 +49,12 @@
                 });
             });
 
-            builder.Services.AddControllers().AddJsonOptions(x => {
-                x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower, false));
-            });
+            builder.Services.AddControllers()
+                .AddJsonOptions(x => {
+                    x.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower, false));
+                });
             builder.Services.AddSwaggerGen();
 
             var options = new DefaultAzureCredentialOptions();

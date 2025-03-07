@@ -87,6 +87,9 @@
         [RequiredSetting([Apr2025], PrizeShuffle.Vanilla)]
         [NoSettingName([Apr2025])]
         public PrizeShuffle PrizeShuffle { get; set; } = PrizeShuffle.Vanilla;
+
+        [NoSettingName]
+        public BootsSettings StartingBoots { get; set; } = BootsSettings.None;
     }
 
     public enum RandomizerInstance {
@@ -210,5 +213,10 @@
         Dungeon,
         Nearby,
         Wild,
+    }
+
+    public enum BootsSettings {
+        None,
+        [AdditionalSetting("--pseudoboots")] Pseudoboots,
     }
 }
