@@ -101,6 +101,14 @@
         [NoSettingName([Apr2025])]
         public DarkRoomSettings DarkRooms { get; set; } = DarkRoomSettings.RequireLamp;
 
+        [NoSettingName]
+        [RequiredSetting([Apr2025], BombSettings.Normal)]
+        public BombSettings Bombs { get; set; } = BombSettings.Normal;
+
+        [NoSettingName]
+        [RequiredSetting([Apr2025], BookSettings.Normal)]
+        public BookSettings Book { get; set; } = BookSettings.Normal;
+
         [SettingName("door_shuffle")]
         [RequiredSetting([Apr2025], DoorShuffle.Vanilla)]
         [NoSettingName([Apr2025])]
@@ -259,6 +267,16 @@
         [SettingName("always_light_cone")] AlwaysLightCone,
         [SettingName("no_dark_rooms")] NoDarkRooms,
         [SettingName("require_lamp")] [AddStartingItems("Lamp")] StartingLamp,
+    }
+
+    public enum BombSettings {
+        Normal,
+        [AdditionalSetting("--bombbag")] BombBagRequired,
+    }
+
+    public enum BookSettings {
+        Normal,
+        [AdditionalSetting("--crystal_book")] CrystalSwitches,
     }
 
     public enum DoorShuffle {
