@@ -44,7 +44,7 @@
             builder.Services.AddCors(options => {
                 options.AddPolicy("AllowDomains", policy => {
                     foreach (var domain in settings.AllowedCors) {
-                        policy.WithOrigins(domain);
+                        policy.WithOrigins(domain).AllowAnyHeader();
                     }
                 });
             });

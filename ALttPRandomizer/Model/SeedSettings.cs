@@ -91,6 +91,32 @@
         [NoSettingName]
         [ForbiddenSetting([Apr2025], BootsSettings.Starting)]
         public BootsSettings Boots { get; set; } = BootsSettings.Normal;
+
+        [NoSettingName]
+        [RequiredSetting([Apr2025], FluteSettings.Normal)]
+        public FluteSettings Flute { get; set; } = FluteSettings.Normal;
+
+        [SettingName("dark_rooms")]
+        [RequiredSetting([Apr2025], DarkRoomSettings.RequireLamp)]
+        [NoSettingName([Apr2025])]
+        public DarkRoomSettings DarkRooms { get; set; } = DarkRoomSettings.RequireLamp;
+
+        [SettingName("door_shuffle")]
+        [RequiredSetting([Apr2025], DoorShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
+        public DoorShuffle DoorShuffle { get; set; } = DoorShuffle.Vanilla;
+
+        [SettingName("intensity")]
+        [NoSettingName([Apr2025])]
+        public DoorLobbies Lobbies { get; set; } = DoorLobbies.Vanilla;
+
+        [SettingName("door_type_mode")]
+        [NoSettingName([Apr2025])]
+        public DoorTypeMode DoorTypeMode { get; set; } = DoorTypeMode.Big;
+
+        [SettingName("trap_door_mode")]
+        [NoSettingName([Apr2025])]
+        public TrapDoorMode TrapDoorMode { get; set; } = TrapDoorMode.Optional;
     }
 
     public enum RandomizerInstance {
@@ -220,5 +246,45 @@
         Normal,
         [AdditionalSetting("--pseudoboots")] Pseudoboots,
         [AddStartingItems("Pegasus_Boots")] Starting,
+    }
+
+    public enum FluteSettings {
+        Normal,
+        [AdditionalSetting("--flute_mode=active")] Preactivated,
+        [AddStartingItems("Ocarina_(Activated)")] Starting,
+    }
+
+    public enum DarkRoomSettings {
+        [SettingName("require_lamp")] RequireLamp,
+        [SettingName("always_light_cone")] AlwaysLightCone,
+        [SettingName("no_dark_rooms")] NoDarkRooms,
+        [SettingName("require_lamp")] [AddStartingItems("Lamp")] StartingLamp,
+    }
+
+    public enum DoorShuffle {
+        Vanilla,
+        Basic,
+        Paired,
+        Partitioned,
+        Crossed,
+    }
+
+    public enum DoorLobbies {
+        [SettingName("2")] Vanilla,
+        [SettingName("3")] Shuffled,
+    }
+
+    public enum DoorTypeMode {
+        Original,
+        Big,
+        All,
+        Chaos,
+    }
+
+    public enum TrapDoorMode {
+        Vanilla,
+        Optional,
+        Boss,
+        [SettingName("oneway")] RemoveAll,
     }
 }
