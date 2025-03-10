@@ -18,6 +18,7 @@
         [SettingName("swords")]
         public Weapons Weapons { get; set; } = Weapons.Random;
 
+        [RequiredSetting([Apr2025], Goal.Ganon)]
         public Goal Goal { get; set; } = Goal.Ganon;
 
         [SettingName("crystals_ganon")]
@@ -158,6 +159,7 @@
         [SettingName("triforcehunt")]TriforceHunt,
         GanonHunt,
         Completionist,
+        Sanctuary,
     }
 
     public enum EntryRequirement {
