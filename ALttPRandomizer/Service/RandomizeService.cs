@@ -5,19 +5,22 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using System.Threading.Tasks;
 
     public class RandomizeService {
-        public RandomizeService(IdGenerator idGenerator, IServiceProvider serviceProvider, ILogger<RandomizeService> logger) {
+        public RandomizeService(IdGenerator idGenerator, IServiceProvider serviceProvider, BaseRandomizer baseRandomizer, ILogger<RandomizeService> logger) {
             this.IdGenerator = idGenerator;
             this.ServiceProvider = serviceProvider;
+            this.BaseRandomizer = baseRandomizer;
             this.Logger = logger;
         }
 
         private ILogger<RandomizeService> Logger { get; }
 
         private IdGenerator IdGenerator { get; }
+        private BaseRandomizer BaseRandomizer { get; }
         private IServiceProvider ServiceProvider { get; }
 
         public async Task<string> RandomizeSeed(SeedSettings settings) {
@@ -36,6 +39,16 @@
             randomizer.Validate(settings);
 
             await randomizer.Randomize(id, settings);
+            return id;
+        }
+
+        public async Task<string> RandomizeMultiworld(IList<SeedSettings> settings) {
+            var id = this.IdGenerator.GenerateId();
+            this.Logger.LogInformation("Generating multiworld {seedId} with settings {@settings}", id, settings);
+
+            this.BaseRandomizer.ValidateAll(settings);
+
+            await this.BaseRandomizer.RandomizeMultiworld(id, settings);
             return id;
         }
     }

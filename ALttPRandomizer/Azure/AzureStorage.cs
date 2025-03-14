@@ -27,11 +27,15 @@
             await BlobClient.UploadBlobAsync(name, data);
         }
 
-        public async Task UploadFileAndDelete(string name, string filepath) {
+        public async Task UploadFileFromSource(string name, string filepath) {
             using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read)) {
                 this.Logger.LogDebug("Uploading file {filepath} -> {name}", filepath, name);
                 await this.UploadFile(name, stream);
             }
+        }
+
+        public async Task UploadFileAndDelete(string name, string filepath) {
+            await this.UploadFileFromSource(name, filepath);
 
             this.Logger.LogDebug("Deleting file {filepath}", filepath);
             File.Delete(filepath);

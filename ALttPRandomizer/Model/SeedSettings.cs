@@ -10,6 +10,9 @@
         public RandomizerInstance Randomizer { get; set; } = RandomizerInstance.Base;
 
         [NoSettingName]
+        public string PlayerName { get; set; } = string.Empty;
+
+        [NoSettingName]
         public RaceMode Race { get; set; } = RaceMode.Normal;
 
         [ForbiddenSetting([Apr2025], Mode.Inverted)]

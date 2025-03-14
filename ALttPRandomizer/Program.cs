@@ -73,6 +73,7 @@
 
             builder.Services.AddKeyedScoped<IRandomizer, BaseRandomizer>(BaseRandomizer.Name);
             builder.Services.AddKeyedScoped<IRandomizer, Apr2025Randomizer>(Apr2025Randomizer.Name);
+            builder.Services.AddScoped<BaseRandomizer>();
 
             builder.Services.AddScoped<RandomizeService>();
             builder.Services.AddScoped<SeedService>();

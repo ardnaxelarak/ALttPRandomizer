@@ -10,6 +10,9 @@
             var props = typeof(SeedSettings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var starting = new List<string>();
             foreach (var prop in props) {
+                if (prop.Name == nameof(SeedSettings.PlayerName)) {
+                    continue;
+                }
                 var value = prop.GetValue(settings) ?? throw new SettingsLookupException("settings.{0} not found", prop.Name);
                 var valueFieldName = value.ToString() ?? throw new SettingsLookupException("settings.{0}.ToString() returned null", prop.Name);
                 var fi = prop.PropertyType.GetField(valueFieldName, BindingFlags.Static | BindingFlags.Public)
