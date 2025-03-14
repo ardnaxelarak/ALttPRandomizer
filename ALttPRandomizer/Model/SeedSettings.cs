@@ -129,6 +129,9 @@
         [SettingName("trap_door_mode")]
         [NoSettingName([Apr2025])]
         public TrapDoorMode TrapDoorMode { get; set; } = TrapDoorMode.Optional;
+
+        [NoSettingName]
+        public Hints Hints { get; set; } = Hints.Off;
     }
 
     public enum RandomizerInstance {
@@ -309,5 +312,10 @@
         Optional,
         Boss,
         [SettingName("oneway")] RemoveAll,
+    }
+
+    public enum Hints {
+        Off,
+        [AdditionalSetting("--hints")] On,
     }
 }
