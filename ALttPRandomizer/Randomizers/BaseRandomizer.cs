@@ -106,7 +106,11 @@
             process.BeginErrorReadLine();
 
             process.Exited += async (sender, args) => {
-                await completed.Invoke(process.ExitCode);
+                try {
+                    await completed.Invoke(process.ExitCode);
+                } catch (Exception ex) {
+                    this.Logger.LogError(ex, "Error while invoking completion of randomizer generation.");
+                }
             };
         }
 
@@ -129,7 +133,7 @@
         public async Task RandomizeMultiworld(string id, IList<SeedSettings> settings) {
             Logger.LogDebug("Recieved request for id {id} to randomize multiworld settings {@settings}", id, settings);
 
-            var names = settings.Select(s => s.PlayerName).ToList();
+            var names = settings.Select(s => s.PlayerName.Replace(' ', '_')).ToList();
 
             var args = settings.Select((s, idx) => string.Format("--p{0}={1}", idx + 1, string.Join(" ", this.GetArgs(s))))
                 .Append(string.Format("--names={0}", string.Join(",", names)))
@@ -139,7 +143,7 @@
                 if (exitcode != 0) {
                     await GenerationFailed(id, exitcode);
                 } else {
-                    await MultiSucceeded(id, settings);
+                    await MultiSucceeded(id, settings, names);
                 }
             });
 
@@ -149,21 +153,23 @@
         }
 
         private async Task SingleSucceeded(string id) {
-            var basename = string.Format("OR_{0}", id);
-            await this.UploadFiles(id, basename, 1, null);
+            try {
+                var basename = string.Format("OR_{0}", id);
+                await this.UploadFiles(id, basename, 1, null);
 
-            var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
-            Logger.LogDebug("Deleting file {filepath}", metaIn);
-            File.Delete(metaIn);
+                var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
+                Logger.LogDebug("Deleting file {filepath}", metaIn);
+                File.Delete(metaIn);
 
-            var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
-            Logger.LogDebug("Deleting file {filepath}", spoilerIn);
-            File.Delete(spoilerIn);
+                var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
+                Logger.LogDebug("Deleting file {filepath}", spoilerIn);
+                File.Delete(spoilerIn);
 
-            var generating = string.Format("{0}/generating", id);
-            await AzureStorage.DeleteFile(generating);
-
-            Logger.LogInformation("Finished uploading seed id {id}", id);
+                Logger.LogInformation("Finished uploading seed id {id}", id);
+            } finally {
+                var generating = string.Format("{0}/generating", id);
+                await AzureStorage.DeleteFile(generating);
+            }
         }
 
         private async Task UploadFiles(string id, string basename, int playerNum, string? parentId) {
@@ -194,49 +200,51 @@
             await Task.WhenAll(tasks);
         }
 
-        private async Task MultiSucceeded(string id, IList<SeedSettings> settings) {
+        private async Task MultiSucceeded(string id, IList<SeedSettings> settings, IList<string> names) {
             var tasks = new List<Task>();
             var subIds = new List<string>();
             var worlds = new List<object>();
 
-            for (var i = 0; i < settings.Count; i++) {
-                var basename = string.Format("OR_{0}_P{1}_{2}", id, i + 1, settings[i].PlayerName);
-                var randomId = this.IdGenerator.GenerateId();
-                subIds.Add(randomId);
-                tasks.Add(this.UploadFiles(randomId, basename, i + 1, id));
+            try {
+                for (var i = 0; i < settings.Count; i++) {
+                    var basename = string.Format("OR_{0}_P{1}_{2}", id, i + 1, names[i]);
+                    var randomId = this.IdGenerator.GenerateId();
+                    subIds.Add(randomId);
+                    tasks.Add(this.UploadFiles(randomId, basename, i + 1, id));
 
-                worlds.Add(new { Name = settings[i].PlayerName, Id = randomId });
+                    worlds.Add(new { Name = settings[i].PlayerName, Id = randomId });
 
-                var settingsJson = JsonSerializer.SerializeToDocument(settings[i], JsonOptions.Default);
-                var settingsOut = string.Format("{0}/settings.json", randomId);
-                tasks.Add(this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson)));
+                    var settingsJson = JsonSerializer.SerializeToDocument(settings[i], JsonOptions.Default);
+                    var settingsOut = string.Format("{0}/settings.json", randomId);
+                    tasks.Add(this.AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson)));
+                }
+
+                var worldsJson = JsonSerializer.SerializeToDocument(worlds, JsonOptions.Default);
+                var worldsOut = string.Format("{0}/worlds.json", id);
+
+                tasks.Add(this.AzureStorage.UploadFile(worldsOut, new BinaryData(worldsJson)));
+
+                await Task.WhenAll(tasks);
+
+                var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
+                var metaOut = string.Format("{0}/meta.json", id);
+                var uploadMeta = AzureStorage.UploadFileAndDelete(metaOut, metaIn);
+
+                var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
+                var spoilerOut = string.Format("{0}/spoiler.json", id);
+                var uploadSpoiler = AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
+
+                var multidataIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_multidata", id));
+                var multidataOut = string.Format("{0}/multidata", id);
+                var uploadMultidata = AzureStorage.UploadFileAndDelete(multidataOut, multidataIn);
+
+                await Task.WhenAll(uploadMeta, uploadSpoiler, uploadMultidata);
+
+                Logger.LogInformation("Finished uploading multiworld id {id}", id);
+            } finally {
+                var generating = string.Format("{0}/generating", id);
+                var deleteGenerating = AzureStorage.DeleteFile(generating);
             }
-
-            var worldsJson = JsonSerializer.SerializeToDocument(worlds, JsonOptions.Default);
-            var worldsOut = string.Format("{0}/worlds.json", id);
-
-            tasks.Add(this.AzureStorage.UploadFile(worldsOut, new BinaryData(worldsJson)));
-
-            await Task.WhenAll(tasks);
-
-            var metaIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Meta.json", id));
-            var metaOut = string.Format("{0}/meta.json", id);
-            var uploadMeta = AzureStorage.UploadFileAndDelete(metaOut, metaIn);
-
-            var spoilerIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_Spoiler.json", id));
-            var spoilerOut = string.Format("{0}/spoiler.json", id);
-            var uploadSpoiler = AzureStorage.UploadFileAndDelete(spoilerOut, spoilerIn);
-
-            var multidataIn = Path.Join(Path.GetTempPath(), string.Format("OR_{0}_multidata", id));
-            var multidataOut = string.Format("{0}/multidata", id);
-            var uploadMultidata = AzureStorage.UploadFileAndDelete(multidataOut, multidataIn);
-
-            await Task.WhenAll(uploadMeta, uploadSpoiler, uploadMultidata);
-
-            var generating = string.Format("{0}/generating", id);
-            var deleteGenerating = AzureStorage.DeleteFile(generating);
-
-            Logger.LogInformation("Finished uploading multiworld id {id}", id);
         }
 
         private JsonDocument ProcessMetadata(string path, int playerNum) {
