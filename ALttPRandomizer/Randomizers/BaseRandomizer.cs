@@ -59,9 +59,19 @@
                 "--shuffletavern",
             };
 
+            if (settings.DoorShuffle == DoorShuffle.Vanilla) {
+                settings.DoorTypeMode = DoorTypeMode.Original;
+            }
+
             foreach (var arg in SettingsProcessor.GetSettings(Instance, settings)) {
                 args.Add(arg);
             }
+
+            if (settings.DoorShuffle != DoorShuffle.Vanilla || settings.DropShuffle != DropShuffle.Vanilla
+                || (settings.Pottery != Pottery.Vanilla && settings.Pottery != Pottery.Cave)) {
+                args.Add("--dungeon_counters=on");
+            }
+
             return args;
         }
 
