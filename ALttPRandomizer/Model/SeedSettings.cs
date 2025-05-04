@@ -19,6 +19,7 @@
         public Mode Mode { get; set; } = Mode.Open;
 
         [SettingName("swords")]
+        [ForbiddenSetting([Apr2025], Weapons.Swordless, Weapons.AssuredMaster)]
         public Weapons Weapons { get; set; } = Weapons.Random;
 
         [RequiredSetting([Apr2025], Goal.Ganon)]
@@ -131,6 +132,10 @@
         public TrapDoorMode TrapDoorMode { get; set; } = TrapDoorMode.Optional;
 
         [NoSettingName]
+        [RequiredSetting([Apr2025], FollowerShuffle.Vanilla)]
+        public FollowerShuffle FollowerShuffle { get; set; } = FollowerShuffle.Vanilla;
+
+        [NoSettingName]
         public Hints Hints { get; set; } = Hints.Off;
     }
 
@@ -155,6 +160,7 @@
         Assured,
         Vanilla,
         Swordless,
+        [SettingName("assured")] [AddStartingItems("Progressive_Sword")] AssuredMaster,
     }
 
     public enum Goal {
@@ -312,6 +318,11 @@
         Optional,
         Boss,
         [SettingName("oneway")] RemoveAll,
+    }
+
+    public enum FollowerShuffle {
+        Vanilla,
+        [AdditionalSetting("--shuffle_followers")] Shuffled,
     }
 
     public enum Hints {
