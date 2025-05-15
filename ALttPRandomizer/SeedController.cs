@@ -51,39 +51,30 @@
         [Route("/seed/{id}")]
         [HttpGet]
         public async Task<ActionResult> GetSeed(string id) {
-            var result = await this.SeedService.GetSeed(id);
-            if (result.TryGetValue("status", out var responseCode)) {
-                switch (responseCode) {
-                    case 200:
-                        return Ok(result);
-                    case 404:
-                        return NotFound(result);
-                    case 409:
-                        return Conflict(result);
-                }
-            }
+            return ResolveResult(await this.SeedService.GetSeed(id));
+        }
 
-            this.Logger.LogWarning("Unexpected result from SeedService: {@result}", result);
-            return StatusCode(500);
+        [Route("/seed/{id}")]
+        [HttpPost]
+        public async Task<ActionResult> RetrySeed(string id) {
+            return ResolveResult(await this.RandomizeService.RetrySeed(id));
         }
 
         [Route("/multi/{id}")]
         [HttpGet]
         public async Task<ActionResult> GetMulti(string id) {
-            var result = await this.SeedService.GetMulti(id);
+            return ResolveResult(await this.SeedService.GetMulti(id));
+        }
+
+        private ActionResult ResolveResult(IDictionary<string, object> result) {
             if (result.TryGetValue("status", out var responseCode)) {
-                switch (responseCode) {
-                    case 200:
-                        return Ok(result);
-                    case 404:
-                        return NotFound(result);
-                    case 409:
-                        return Conflict(result);
+                if (responseCode is int code) {
+                    return StatusCode(code, result);
                 }
             }
 
             this.Logger.LogWarning("Unexpected result from SeedService: {@result}", result);
-            return StatusCode(500);
+            return StatusCode(500, result);
         }
     }
 }

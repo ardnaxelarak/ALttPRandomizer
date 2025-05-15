@@ -12,6 +12,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Serilog;
+    using System.Linq;
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
@@ -43,9 +44,7 @@
 
             builder.Services.AddCors(options => {
                 options.AddPolicy("AllowDomains", policy => {
-                    foreach (var domain in settings.AllowedCors) {
-                        policy.WithOrigins(domain).AllowAnyHeader();
-                    }
+                    policy.WithOrigins(settings.AllowedCors.ToArray()).AllowAnyMethod().AllowAnyHeader();
                 });
             });
 
