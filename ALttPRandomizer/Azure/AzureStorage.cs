@@ -1,5 +1,6 @@
 ﻿namespace ALttPRandomizer.Azure {
     using global::Azure.Storage.Blobs;
+    using global::Azure.Storage.Blobs.Models;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -61,6 +62,12 @@
             }
 
             return data;
+        }
+
+        public async Task<DateTimeOffset> GetFileCreation(string filename) {
+            var blob = this.BlobClient.GetBlobClient(filename);
+            var blobProperties = await blob.GetPropertiesAsync();
+            return blobProperties.Value.CreatedOn;
         }
     }
 }

@@ -33,6 +33,11 @@
         [NoSettingName([Apr2025])]
         public EntryRequirement CrystalsGT { get; set; } = EntryRequirement.Crystals7;
 
+        [SettingName("ganon_item")]
+        [RequiredSetting([Apr2025], GanonItem.Silver)]
+        [NoSettingName([Apr2025])]
+        public GanonItem GanonItem { get; set; } = GanonItem.Silver;
+
         [SettingName("shuffle")]
         [ForbiddenSetting([Apr2025], EntranceShuffle.Swapped)]
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
@@ -56,6 +61,11 @@
         [RequiredSetting([Apr2025], EnemyShuffle.Vanilla)]
         [NoSettingName([Apr2025])]
         public EnemyShuffle EnemyShuffle { get; set; } = EnemyShuffle.Vanilla;
+
+        [SettingName("shuffle_damage_table")]
+        [RequiredSetting([Apr2025], DamageTableShuffle.Vanilla)]
+        [NoSettingName([Apr2025])]
+        public DamageTableShuffle DamageTableShuffle { get; set; } = DamageTableShuffle.Vanilla;
 
         [SettingName("keyshuffle")]
         [RequiredSetting([Apr2025], KeyLocations.Dungeon, KeyLocations.Wild)]
@@ -135,6 +145,10 @@
         [RequiredSetting([Apr2025], FollowerShuffle.Vanilla)]
         public FollowerShuffle FollowerShuffle { get; set; } = FollowerShuffle.Vanilla;
 
+        [SettingName("damage_challenge")]
+        [NoSettingName([Apr2025])]
+        public DamageChallengeMode DamageChallenge { get; set; } = DamageChallengeMode.Normal;
+
         [NoSettingName]
         public Hints Hints { get; set; } = Hints.Off;
     }
@@ -186,6 +200,24 @@
         Random,
     }
 
+    public enum GanonItem {
+        Silver,
+        Boomerang,
+        Hookshot,
+        Powder,
+        [SettingName("fire_rod")] FireRod,
+        [SettingName("ice_rod")] IceRod,
+        Bombos,
+        Ether,
+        Quake,
+        Hammer,
+        Bee,
+        Somaria,
+        Byrna,
+        Random,
+        None,
+    }
+
     public enum EntranceShuffle {
         Vanilla,
         Full,
@@ -219,6 +251,11 @@
         [SettingName("none")] Vanilla,
         Shuffled,
         Mimics,
+    }
+
+    public enum DamageTableShuffle {
+        Vanilla,
+        Randomized,
     }
 
     public enum KeyLocations {
@@ -323,6 +360,12 @@
     public enum FollowerShuffle {
         Vanilla,
         [AdditionalSetting("--shuffle_followers")] Shuffled,
+    }
+
+    public enum DamageChallengeMode {
+        Normal,
+        OHKO,
+        Gloom,
     }
 
     public enum Hints {

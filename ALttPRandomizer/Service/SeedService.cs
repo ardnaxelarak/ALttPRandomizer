@@ -1,4 +1,5 @@
 ﻿namespace ALttPRandomizer.Service {
+    using global::Azure;
     using ALttPRandomizer.Azure;
     using ALttPRandomizer.Model;
     using Microsoft.Extensions.Logging;
@@ -48,6 +49,13 @@
                 }
             }
             result["patch"] = Convert.ToBase64String(patchData.ToArray());
+
+            try {
+                var creationTime = await this.AzureStorage.GetFileCreation($"{seedId}/patch.bps");
+                result["created"] = creationTime.ToUnixTimeSeconds();
+            } catch (RequestFailedException e) {
+                this.Logger.LogError(e, "Failed to get creation timestamp for seed {seedId}", seedId);
+            }
 
             if (files.TryGetValue("meta.json", out var metaData)) {
                 var json = JsonDocument.Parse(metaData.ToString());
