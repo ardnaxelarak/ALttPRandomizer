@@ -309,6 +309,7 @@
 
     public enum FluteSettings {
         Normal,
+        [AdditionalSetting("--flute_mode=pseudo")] Pseudoflute,
         [AdditionalSetting("--flute_mode=active")] Preactivated,
         [AddStartingItems("Ocarina_(Activated)")] Starting,
     }
@@ -318,6 +319,7 @@
         [SettingName("always_light_cone")] AlwaysLightCone,
         [SettingName("no_dark_rooms")] NoDarkRooms,
         [SettingName("require_lamp")] [AddStartingItems("Lamp")] StartingLamp,
+        [SettingName("always_in_logic")] AlwaysInLogic,
     }
 
     public enum BombSettings {
