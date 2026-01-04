@@ -125,7 +125,7 @@
         public BookSettings Book { get; set; } = BookSettings.Normal;
 
         [SettingName("door_shuffle")]
-        [RequiredSetting([Apr2025], DoorShuffle.Vanilla)]
+        [RequiredSetting([Apr2025, DungeonMap], DoorShuffle.Vanilla)]
         [NoSettingName([Apr2025])]
         public DoorShuffle DoorShuffle { get; set; } = DoorShuffle.Vanilla;
 
@@ -145,6 +145,14 @@
         [RequiredSetting([Apr2025], FollowerShuffle.Vanilla)]
         public FollowerShuffle FollowerShuffle { get; set; } = FollowerShuffle.Vanilla;
 
+        [SettingName("ow_fluteshuffle")]
+        [NoSettingName([Apr2025])]
+        public FluteShuffle FluteShuffle { get; set; } = FluteShuffle.Vanilla;
+
+        [NoSettingName]
+        [RequiredSetting([Apr2025], TileSwap.Vanilla)]
+        public TileSwap TileSwap { get; set; } = TileSwap.Vanilla;
+
         [SettingName("damage_challenge")]
         [NoSettingName([Apr2025])]
         public DamageChallengeMode DamageChallenge { get; set; } = DamageChallengeMode.Normal;
@@ -153,9 +161,11 @@
         public Hints Hints { get; set; } = Hints.Off;
     }
 
-    public enum RandomizerInstance {
+    public enum RandomizerInstance
+    {
         [RandomizerName(BaseRandomizer.Name)] Base,
         [RandomizerName(Apr2025Randomizer.Name)] Apr2025,
+        [RandomizerName(BaseRandomizer.DungeonMapName)] DungeonMap,
     }
 
     public enum RaceMode {
@@ -359,9 +369,20 @@
         [SettingName("oneway")] RemoveAll,
     }
 
+    public enum FluteShuffle {
+        Vanilla,
+        Random,
+        Balanced,
+    }
+
     public enum FollowerShuffle {
         Vanilla,
         [AdditionalSetting("--shuffle_followers")] Shuffled,
+    }
+
+    public enum TileSwap {
+        Vanilla,
+        [AdditionalSetting("--ow_mixed")] TileSwap,
     }
 
     public enum DamageChallengeMode {

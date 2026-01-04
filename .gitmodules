@@ -7,3 +7,6 @@
 [submodule "Apr2025Randomizer"]
 	path = Apr2025Randomizer
 	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer
+[submodule "DungeonMapRandomizer"]
+	path = DungeonMapRandomizer
+	url = git@github.com:ardnaxelarak/ALttPDoorRandomizer

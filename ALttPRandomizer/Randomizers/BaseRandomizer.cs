@@ -16,7 +16,7 @@
 
     public class BaseRandomizer : IRandomizer {
         public const string Name = "base";
-        public const RandomizerInstance Instance = RandomizerInstance.Base;
+        public const string DungeonMapName = "dungeon_map";
 
         public BaseRandomizer(
                 AzureStorage azureStorage,
@@ -39,7 +39,7 @@
         private ServiceOptions Configuration => OptionsMonitor.CurrentValue;
 
         public void Validate(SeedSettings settings) {
-            this.SettingsProcessor.ValidateSettings(Instance, settings);
+            this.SettingsProcessor.ValidateSettings(settings.Randomizer, settings);
         }
 
         public void ValidateAll(IList<SeedSettings> settings) {
@@ -63,7 +63,7 @@
                 settings.DoorTypeMode = DoorTypeMode.Original;
             }
 
-            foreach (var arg in SettingsProcessor.GetSettings(Instance, settings)) {
+            foreach (var arg in SettingsProcessor.GetSettings(settings.Randomizer, settings)) {
                 args.Add(arg);
             }
 
@@ -75,10 +75,10 @@
             return args;
         }
 
-        private async Task StartProcess(string id, IEnumerable<string> settings, Func<int, Task> completed) {
+        private async Task StartProcess(string randomizerName, string id, IEnumerable<string> settings, Func<int, Task> completed) {
             var start = new ProcessStartInfo() {
                 FileName = Configuration.PythonPath,
-                WorkingDirectory = Configuration.RandomizerPaths[Name],
+                WorkingDirectory = Configuration.RandomizerPaths[randomizerName],
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
@@ -127,7 +127,7 @@
         public async Task Randomize(string id, SeedSettings settings) {
             Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
-            await StartProcess(id, this.GetArgs(settings), async exitcode => {
+            await StartProcess(this.SettingsProcessor.GetRandomizerName(settings.Randomizer), id, this.GetArgs(settings), async exitcode => {
                 if (exitcode != 0) {
                     await GenerationFailed(id, exitcode);
                 } else {
@@ -149,7 +149,7 @@
                 .Append(string.Format("--names={0}", string.Join(",", names)))
                 .Append(string.Format("--multi={0}", settings.Count));
 
-            await StartProcess(id, args, async exitcode => {
+            await StartProcess(Name, id, args, async exitcode => {
                 if (exitcode != 0) {
                     await GenerationFailed(id, exitcode);
                 } else {

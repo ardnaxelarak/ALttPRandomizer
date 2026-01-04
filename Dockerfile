@@ -28,6 +28,10 @@ RUN mkdir -p /randomizer/data
 RUN touch /randomizer/data/base2current.json
 RUN chown $APP_UID:$APP_UID /randomizer/data/base2current.json
 
+RUN mkdir -p /dungeon_map_randomizer/data
+RUN touch /dungeon_map_randomizer/data/base2current.json
+RUN chown $APP_UID:$APP_UID /dungeon_map_randomizer/data/base2current.json
+
 USER $APP_UID
 
 RUN python3 -m ensurepip --upgrade
@@ -42,6 +46,10 @@ COPY BaseRandomizer/ .
 
 WORKDIR /apr2025_randomizer
 COPY Apr2025Randomizer/ .
+
+WORKDIR /dungeon_map_randomizer
+
+COPY DungeonMapRandomizer/ .
 
 WORKDIR /app
 COPY --from=build /app/publish .

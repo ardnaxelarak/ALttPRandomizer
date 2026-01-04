@@ -64,6 +64,19 @@
                 }
             }
         }
+
+        public string GetRandomizerName(RandomizerInstance randomizer)
+        {
+            var fi = typeof(RandomizerInstance).GetField(randomizer.ToString(), BindingFlags.Static | BindingFlags.Public);
+
+            var randomizerKey = fi?.GetCustomAttribute<RandomizerNameAttribute>()?.Name;
+
+            if (randomizerKey == null) {
+                throw new InvalidSettingsException("Invalid randomizer: {0}", randomizerKey);
+            }
+
+            return randomizerKey;
+        }
     }
 
     public class SettingsLookupException : Exception {
