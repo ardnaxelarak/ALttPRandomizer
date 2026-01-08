@@ -141,6 +141,7 @@
         }
 
         public async Task RandomizeMultiworld(string id, IList<SeedSettings> settings) {
+            var randomizerName = this.SettingsProcessor.GetRandomizerName(settings[0].Randomizer);
             Logger.LogDebug("Recieved request for id {id} to randomize multiworld settings {@settings}", id, settings);
 
             var names = settings.Select(s => s.PlayerName.Replace(' ', '_')).ToList();
@@ -149,7 +150,7 @@
                 .Append(string.Format("--names={0}", string.Join(",", names)))
                 .Append(string.Format("--multi={0}", settings.Count));
 
-            await StartProcess(Name, id, args, async exitcode => {
+            await StartProcess(randomizerName, id, args, async exitcode => {
                 if (exitcode != 0) {
                     await GenerationFailed(id, exitcode);
                 } else {

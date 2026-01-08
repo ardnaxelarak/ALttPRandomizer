@@ -87,6 +87,11 @@
         [NoSettingName([Apr2025])]
         public DungeonItemLocations Compasses { get; set; } = DungeonItemLocations.Dungeon;
 
+        [SettingName("showloot")]
+        [RequiredSetting([Apr2025, Base], ShowLoot.Never)]
+        [NoSettingName([Apr2025, Base])]
+        public ShowLoot ShowLoot { get; set; } = ShowLoot.Never;
+
         [NoSettingName]
         [RequiredSetting([Apr2025], ShopShuffle.Vanilla)]
         public ShopShuffle ShopShuffle { get; set; } = ShopShuffle.Vanilla;
@@ -124,8 +129,12 @@
         [RequiredSetting([Apr2025], BookSettings.Normal)]
         public BookSettings Book { get; set; } = BookSettings.Normal;
 
+        [NoSettingName]
+        [RequiredSetting([Apr2025], MirrorSettings.Normal)]
+        public MirrorSettings Mirror { get; set; } = MirrorSettings.Normal;
+
         [SettingName("door_shuffle")]
-        [RequiredSetting([Apr2025, DungeonMap], DoorShuffle.Vanilla)]
+        [RequiredSetting([Apr2025], DoorShuffle.Vanilla)]
         [NoSettingName([Apr2025])]
         public DoorShuffle DoorShuffle { get; set; } = DoorShuffle.Vanilla;
 
@@ -311,10 +320,22 @@
         Wild,
     }
 
+    public enum ShowLoot {
+        Never,
+        Compass,
+        Always,
+    }
+
     public enum BootsSettings {
         Normal,
         [AdditionalSetting("--pseudoboots")] Pseudoboots,
         [AddStartingItems("Pegasus_Boots")] Starting,
+    }
+
+    public enum MirrorSettings {
+        Normal,
+        [AdditionalSetting("--mirrorscroll")] Scroll,
+        [AddStartingItems("Magic_Mirror")] Starting,
     }
 
     public enum FluteSettings {
