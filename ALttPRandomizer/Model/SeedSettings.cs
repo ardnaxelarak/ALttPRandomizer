@@ -92,6 +92,11 @@
         [NoSettingName([Apr2025, Base])]
         public ShowLoot ShowLoot { get; set; } = ShowLoot.Never;
 
+        [SettingName("showmap")]
+        [RequiredSetting([Apr2025, Base], ShowMap.Map)]
+        [NoSettingName([Apr2025, Base])]
+        public ShowMap ShowMap { get; set; } = ShowMap.Map;
+
         [NoSettingName]
         [RequiredSetting([Apr2025], ShopShuffle.Vanilla)]
         public ShopShuffle ShopShuffle { get; set; } = ShopShuffle.Vanilla;
@@ -322,7 +327,14 @@
 
     public enum ShowLoot {
         Never,
+        Presence,
         Compass,
+        Always,
+    }
+
+    public enum ShowMap {
+        Visited,
+        Map,
         Always,
     }
 

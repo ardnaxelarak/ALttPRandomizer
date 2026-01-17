@@ -18,6 +18,9 @@
         public const string Name = "base";
         public const string DungeonMapName = "dungeon_map";
 
+        public const int MULTI_TRIES = 20;
+        public const int SINGLE_TRIES = 20;
+
         public BaseRandomizer(
                 AzureStorage azureStorage,
                 CommonSettingsProcessor settingsProcessor,
@@ -97,6 +100,8 @@
 
             args.Add("--spoiler=json");
 
+            args.Add(string.Format("--tries={0}", SINGLE_TRIES));
+
             foreach (var arg in settings) {
                 args.Add(arg);
             }
@@ -148,7 +153,8 @@
 
             var args = settings.Select((s, idx) => string.Format("--p{0}={1}", idx + 1, string.Join(" ", this.GetArgs(s))))
                 .Append(string.Format("--names={0}", string.Join(",", names)))
-                .Append(string.Format("--multi={0}", settings.Count));
+                .Append(string.Format("--multi={0}", settings.Count))
+                .Append(string.Format("--tries={0}", MULTI_TRIES));
 
             await StartProcess(randomizerName, id, args, async exitcode => {
                 if (exitcode != 0) {
