@@ -69,6 +69,7 @@
             builder.Services.AddSingleton(sp => sp);
             builder.Services.AddSingleton<AzureStorage>();
             builder.Services.AddSingleton<CommonSettingsProcessor>();
+            builder.Services.AddSingleton<ShutdownHandler>();
 
             builder.Services.AddKeyedScoped<IRandomizer, BaseRandomizer>(BaseRandomizer.Name);
             builder.Services.AddKeyedScoped<IRandomizer, BaseRandomizer>(BaseRandomizer.DungeonMapName);
@@ -90,7 +91,11 @@
                 c.EnableValidator();
             });
 
+            var sh = app.Services.GetService<ShutdownHandler>();
+
             app.Run();
+
+            sh?.HandleShutdown().Wait();
         }
     }
 }

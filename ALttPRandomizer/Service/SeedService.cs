@@ -102,6 +102,7 @@
                 } else {
                     result["status"] = 404;
                     result["error"] = "generation failed";
+                    result["retry"] = true;
                     return result;
                 }
             }

@@ -66,6 +66,12 @@
             return ResolveResult(await this.SeedService.GetMulti(id));
         }
 
+        [Route("/multi/{id}")]
+        [HttpPost]
+        public async Task<ActionResult> RetryMulti(string id) {
+            return ResolveResult(await this.RandomizeService.RetryMulti(id));
+        }
+
         private ActionResult ResolveResult(IDictionary<string, object> result) {
             if (result.TryGetValue("status", out var responseCode)) {
                 if (responseCode is int code) {

@@ -95,5 +95,46 @@
             result["status"] = 202;
             return result;
         }
+
+        public async Task<IDictionary<string, object>> RetryMulti(string multiId) {
+            var files = await this.AzureStorage.GetFiles(multiId);
+
+            this.Logger.LogDebug("Found files: {@files}", files.Keys);
+
+            var result = new Dictionary<string, object>();
+
+            if (!files.TryGetValue("settings.json", out var settingsData)) {
+                result["status"] = 404;
+                result["error"] = "multi settings not found";
+                return result;
+            }
+
+            var settingsJson = JsonDocument.Parse(settingsData.ToString());
+
+            var settings = settingsJson.Deserialize<IList<SeedSettings>>(JsonOptions.Default);
+
+            if (settings == null) {
+                result["status"] = 404;
+                result["error"] = "multi settings not found";
+                return result;
+            }
+
+            if (files.TryGetValue("patch.bps", out var patchData)) {
+                result["status"] = 409;
+                result["error"] = "generation already successful";
+                return result;
+            }
+
+            if (files.ContainsKey("generating")) {
+                result["status"] = 409;
+                result["error"] = "generation still in progress";
+                return result;
+            }
+
+            await this.RandomizeMultiworld(settings, multiId);
+
+            result["status"] = 202;
+            return result;
+        }
     }
 }

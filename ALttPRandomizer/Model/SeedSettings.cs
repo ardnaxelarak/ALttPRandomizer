@@ -42,6 +42,10 @@
         [ForbiddenSetting([Apr2025], EntranceShuffle.Swapped)]
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
 
+        [NoSettingName]
+        [RequiredSetting([Apr2025], LinksHouse.Vanilla)]
+        public LinksHouse LinksHouse { get; set; } = LinksHouse.Vanilla;
+
         [SettingName("skullwoods")]
         [RequiredSetting([Apr2025], SkullWoodsShuffle.Original)]
         [NoSettingName([Apr2025])]
@@ -248,6 +252,11 @@
         Crossed,
         Swapped,
         [SettingName("insanity")] Decoupled,
+    }
+
+    public enum LinksHouse {
+        Vanilla,
+        [AdditionalSetting("--shufflelinks")] Shuffled,
     }
 
     public enum SkullWoodsShuffle {

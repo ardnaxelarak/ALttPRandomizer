@@ -18,18 +18,20 @@
         public const string Name = "base";
         public const string DungeonMapName = "dungeon_map";
 
-        public const int MULTI_TRIES = 20;
-        public const int SINGLE_TRIES = 20;
+        public const int MULTI_TRIES = 80;
+        public const int SINGLE_TRIES = 5;
 
         public BaseRandomizer(
                 AzureStorage azureStorage,
                 CommonSettingsProcessor settingsProcessor,
                 IdGenerator idGenerator,
+                ShutdownHandler shutdownHandler,
                 IOptionsMonitor<ServiceOptions> optionsMonitor,
                 ILogger<BaseRandomizer> logger) {
             this.AzureStorage = azureStorage;
             this.SettingsProcessor = settingsProcessor;
             this.IdGenerator = idGenerator;
+            this.ShutdownHandler = shutdownHandler;
             this.OptionsMonitor = optionsMonitor;
             this.Logger = logger;
         }
@@ -40,6 +42,7 @@
         private IOptionsMonitor<ServiceOptions> OptionsMonitor { get; }
         private ILogger<BaseRandomizer> Logger { get; }
         private ServiceOptions Configuration => OptionsMonitor.CurrentValue;
+        private ShutdownHandler ShutdownHandler { get; }
 
         public void Validate(SeedSettings settings) {
             this.SettingsProcessor.ValidateSettings(settings.Randomizer, settings);
@@ -58,7 +61,6 @@
             var args = new List<string>() {
                 "--reduce_flashing",
                 "--quickswap",
-                "--shufflelinks",
                 "--shuffletavern",
             };
 
@@ -100,13 +102,11 @@
 
             args.Add("--spoiler=json");
 
-            args.Add(string.Format("--tries={0}", SINGLE_TRIES));
-
             foreach (var arg in settings) {
                 args.Add(arg);
             }
 
-            Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
+            Logger.LogInformation("Randomizing {id} with args: {args}", id, string.Join(" ", args.Select(arg => $"\"{arg}\"")));
 
             var generating = string.Format("{0}/generating", id);
             await AzureStorage.UploadFile(generating, BinaryData.Empty);
@@ -114,14 +114,17 @@
             var process = Process.Start(start) ?? throw new GenerationFailedException("Process failed to start.");
             process.EnableRaisingEvents = true;
 
-            process.OutputDataReceived += (_, args) => Logger.LogInformation("Randomizer STDOUT: {output}", args.Data);
-            process.ErrorDataReceived += (_, args) => Logger.LogInformation("Randomizer STDERR: {output}", args.Data);
+            process.OutputDataReceived += (_, args) => Logger.LogInformation("Randomizer {id} STDOUT: {output}", id, args.Data);
+            process.ErrorDataReceived += (_, args) => Logger.LogInformation("Randomizer {id} STDERR: {output}", id, args.Data);
 
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
+            this.ShutdownHandler.AddId(id);
+
             process.Exited += async (sender, args) => {
                 try {
+                    this.ShutdownHandler.RemoveId(id);
                     await completed.Invoke(process.ExitCode);
                 } catch (Exception ex) {
                     this.Logger.LogError(ex, "Error while invoking completion of randomizer generation.");
@@ -132,7 +135,9 @@
         public async Task Randomize(string id, SeedSettings settings) {
             Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
-            await StartProcess(this.SettingsProcessor.GetRandomizerName(settings.Randomizer), id, this.GetArgs(settings), async exitcode => {
+            var args = this.GetArgs(settings).Append(string.Format("--tries={0}", SINGLE_TRIES));
+
+            await StartProcess(this.SettingsProcessor.GetRandomizerName(settings.Randomizer), id, args, async exitcode => {
                 if (exitcode != 0) {
                     await GenerationFailed(id, exitcode);
                 } else {
