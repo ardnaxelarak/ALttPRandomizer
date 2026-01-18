@@ -212,6 +212,7 @@
         Pedestal,
         [SettingName("triforcehunt")]TriforceHunt,
         GanonHunt,
+        Trinity,
         Completionist,
         Sanctuary,
     }
