@@ -37,7 +37,7 @@
             this.SettingsProcessor.ValidateSettings(Instance, settings);
         }
 
-        public async Task Randomize(string id, SeedSettings settings) {
+        public async Task Randomize(string id, SeedSettings settings, bool uploadSettings = true) {
             Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
             var start = new ProcessStartInfo() {
@@ -90,9 +90,11 @@
                 }
             };
 
-            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
-            var settingsOut = string.Format("{0}/settings.json", id);
-            await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            if (uploadSettings) {
+                var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
+                var settingsOut = string.Format("{0}/settings.json", id);
+                await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            }
         }
 
         private async Task GenerationSucceeded(string id, SeedSettings settings) {

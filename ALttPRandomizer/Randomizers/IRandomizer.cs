@@ -5,6 +5,6 @@
     public interface IRandomizer {
         public void Validate(SeedSettings settings);
 
-        public Task Randomize(string id, SeedSettings settings);
+        public Task Randomize(string id, SeedSettings settings, bool uploadSettings = true);
     }
 }

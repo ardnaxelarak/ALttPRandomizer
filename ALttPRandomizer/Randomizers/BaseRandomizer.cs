@@ -18,7 +18,7 @@
         public const string Name = "base";
         public const string DungeonMapName = "dungeon_map";
 
-        public const int MULTI_TRIES = 80;
+        public const int MULTI_TRIES = 100;
         public const int SINGLE_TRIES = 5;
 
         public BaseRandomizer(
@@ -125,14 +125,15 @@
             process.Exited += async (sender, args) => {
                 try {
                     this.ShutdownHandler.RemoveId(id);
+                    Logger.LogInformation("Generation {id} has exited with exit code {exitCode}", id, process.ExitCode);
                     await completed.Invoke(process.ExitCode);
                 } catch (Exception ex) {
-                    this.Logger.LogError(ex, "Error while invoking completion of randomizer generation.");
+                    this.Logger.LogError(ex, "Error while invoking completion of randomizer generation {id}.", id);
                 }
             };
         }
 
-        public async Task Randomize(string id, SeedSettings settings) {
+        public async Task Randomize(string id, SeedSettings settings, bool uploadSettings = true) {
             Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
             var args = this.GetArgs(settings).Append(string.Format("--tries={0}", SINGLE_TRIES));
@@ -145,12 +146,14 @@
                 }
             });
 
-            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
-            var settingsOut = string.Format("{0}/settings.json", id);
-            await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            if (uploadSettings) {
+                var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
+                var settingsOut = string.Format("{0}/settings.json", id);
+                await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            }
         }
 
-        public async Task RandomizeMultiworld(string id, IList<SeedSettings> settings) {
+        public async Task RandomizeMultiworld(string id, IList<SeedSettings> settings, bool uploadSettings = true) {
             var randomizerName = this.SettingsProcessor.GetRandomizerName(settings[0].Randomizer);
             Logger.LogDebug("Recieved request for id {id} to randomize multiworld settings {@settings}", id, settings);
 
@@ -169,9 +172,11 @@
                 }
             });
 
-            var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
-            var settingsOut = string.Format("{0}/settings.json", id);
-            await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            if (uploadSettings) {
+                var settingsJson = JsonSerializer.SerializeToDocument(settings, JsonOptions.Default);
+                var settingsOut = string.Format("{0}/settings.json", id);
+                await AzureStorage.UploadFile(settingsOut, new BinaryData(settingsJson));
+            }
         }
 
         private async Task SingleSucceeded(string id) {

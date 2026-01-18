@@ -47,7 +47,7 @@
             var randomizer = this.ServiceProvider.GetRequiredKeyedService<IRandomizer>(randomizerKey);
             randomizer.Validate(settings);
 
-            await randomizer.Randomize(id, settings);
+            await randomizer.Randomize(id, settings, seedId == null);
             return id;
         }
 
@@ -57,7 +57,7 @@
 
             this.BaseRandomizer.ValidateAll(settings);
 
-            await this.BaseRandomizer.RandomizeMultiworld(id, settings);
+            await this.BaseRandomizer.RandomizeMultiworld(id, settings, multiId == null);
             return id;
         }
 
