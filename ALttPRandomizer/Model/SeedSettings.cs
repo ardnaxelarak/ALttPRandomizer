@@ -28,6 +28,9 @@
         [SettingName("crystals_ganon")]
         public EntryRequirement CrystalsGanon { get; set; } = EntryRequirement.Crystals7;
 
+        [SettingName("bosses_ganon")]
+        public BossRequirement BossesGanon { get; set; } = BossRequirement.Bosses8of10;
+
         [SettingName("crystals_gt")]
         [JsonPropertyName("crystals_gt")]
         [NoSettingName([Apr2025])]
@@ -210,7 +213,8 @@
         [SettingName("crystals")] FastGanon,
         [SettingName("dungeons")] AllDungeons,
         Pedestal,
-        [SettingName("triforcehunt")]TriforceHunt,
+        [SettingName("triforcehunt")] TriforceHunt,
+        [SettingName("bosshunt")] BossHunt,
         GanonHunt,
         Trinity,
         Completionist,
@@ -227,6 +231,34 @@
         [JsonStringEnumMemberName("6")] [SettingName("6")] Crystals6 = 6,
         [JsonStringEnumMemberName("7")] [SettingName("7")] Crystals7 = 7,
         Random,
+    }
+
+    public enum BossRequirement {
+        [JsonStringEnumMemberName("0of10")] [SettingName("0")] Bosses0of10,
+        [JsonStringEnumMemberName("1of10")] [SettingName("1")] Bosses1of10,
+        [JsonStringEnumMemberName("2of10")] [SettingName("2")] Bosses2of10,
+        [JsonStringEnumMemberName("3of10")] [SettingName("3")] Bosses3of10,
+        [JsonStringEnumMemberName("4of10")] [SettingName("4")] Bosses4of10,
+        [JsonStringEnumMemberName("5of10")] [SettingName("5")] Bosses5of10,
+        [JsonStringEnumMemberName("6of10")] [SettingName("6")] Bosses6of10,
+        [JsonStringEnumMemberName("7of10")] [SettingName("7")] Bosses7of10,
+        [JsonStringEnumMemberName("8of10")] [SettingName("8")] Bosses8of10,
+        [JsonStringEnumMemberName("9of10")] [SettingName("9")] Bosses9of10,
+        [JsonStringEnumMemberName("10of10")] [SettingName("10")] Bosses10of10,
+
+        [JsonStringEnumMemberName("0of12")] [SettingName("0")] [AdditionalSetting("--bosshunt_include_agas")] Bosses0of12,
+        [JsonStringEnumMemberName("1of12")] [SettingName("1")] [AdditionalSetting("--bosshunt_include_agas")] Bosses1of12,
+        [JsonStringEnumMemberName("2of12")] [SettingName("2")] [AdditionalSetting("--bosshunt_include_agas")] Bosses2of12,
+        [JsonStringEnumMemberName("3of12")] [SettingName("3")] [AdditionalSetting("--bosshunt_include_agas")] Bosses3of12,
+        [JsonStringEnumMemberName("4of12")] [SettingName("4")] [AdditionalSetting("--bosshunt_include_agas")] Bosses4of12,
+        [JsonStringEnumMemberName("5of12")] [SettingName("5")] [AdditionalSetting("--bosshunt_include_agas")] Bosses5of12,
+        [JsonStringEnumMemberName("6of12")] [SettingName("6")] [AdditionalSetting("--bosshunt_include_agas")] Bosses6of12,
+        [JsonStringEnumMemberName("7of12")] [SettingName("7")] [AdditionalSetting("--bosshunt_include_agas")] Bosses7of12,
+        [JsonStringEnumMemberName("8of12")] [SettingName("8")] [AdditionalSetting("--bosshunt_include_agas")] Bosses8of12,
+        [JsonStringEnumMemberName("9of12")] [SettingName("9")] [AdditionalSetting("--bosshunt_include_agas")] Bosses9of12,
+        [JsonStringEnumMemberName("10of12")] [SettingName("10")] [AdditionalSetting("--bosshunt_include_agas")] Bosses10of12,
+        [JsonStringEnumMemberName("11of12")] [SettingName("11")] [AdditionalSetting("--bosshunt_include_agas")] Bosses11of12,
+        [JsonStringEnumMemberName("12of12")] [SettingName("12")] [AdditionalSetting("--bosshunt_include_agas")] Bosses12of12,
     }
 
     public enum GanonItem {
