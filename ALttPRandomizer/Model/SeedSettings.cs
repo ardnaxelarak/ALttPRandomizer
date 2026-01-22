@@ -29,6 +29,7 @@
         public EntryRequirement CrystalsGanon { get; set; } = EntryRequirement.Crystals7;
 
         [SettingName("bosses_ganon")]
+        [NoSettingName([Apr2025, Base])]
         public BossRequirement BossesGanon { get; set; } = BossRequirement.Bosses8of10;
 
         [SettingName("crystals_gt")]
