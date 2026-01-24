@@ -13,10 +13,15 @@
                 if (prop.Name == nameof(SeedSettings.PlayerName)) {
                     continue;
                 }
+
                 var value = prop.GetValue(settings) ?? throw new SettingsLookupException("settings.{0} not found", prop.Name);
                 var valueFieldName = value.ToString() ?? throw new SettingsLookupException("settings.{0}.ToString() returned null", prop.Name);
                 var fi = prop.PropertyType.GetField(valueFieldName, BindingFlags.Static | BindingFlags.Public)
                     ?? throw new SettingsLookupException("Could not get field info for value {0}.{1}", prop.PropertyType, valueFieldName);
+
+                if (prop.GetCustomAttributes<IgnoreSettingAttribute>().Any(att => att.HasRandomizer(randomizer))) {
+                    continue;
+                }
 
                 if (!prop.GetCustomAttributes<NoSettingNameAttribute>().Any(att => att.HasRandomizer(randomizer))) {
                     var settingName =
@@ -30,7 +35,9 @@
                 }
 
                 foreach (var att in fi.GetCustomAttributes<AdditionalSettingAttribute>().Where(att => att.HasRandomizer(randomizer))) {
-                    yield return att.Setting;
+                    foreach (var setting in att.Settings) {
+                        yield return setting;
+                    }
                 }
 
                 foreach (var att in fi.GetCustomAttributes<AddStartingItemsAttribute>().Where(att => att.HasRandomizer(randomizer))) {
@@ -79,11 +86,7 @@
         }
     }
 
-    public class SettingsLookupException : Exception {
-        public SettingsLookupException(string message, params object?[] args) : base(string.Format(message, args)) { }
-    }
+    public class SettingsLookupException(string message, params object?[] args) : Exception(string.Format(message, args)) { }
 
-    public class InvalidSettingsException : Exception {
-        public InvalidSettingsException(string message, params object?[] args) : base(string.Format(message, args)) { }
-    }
+    public class InvalidSettingsException(string message, params object?[] args) : Exception(string.Format(message, args)) { }
 }

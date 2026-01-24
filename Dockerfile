@@ -20,37 +20,39 @@ EXPOSE 8080
 EXPOSE 8081
 
 RUN tdnf install -y python3
+RUN python3 -m ensurepip --default-pip --upgrade
+RUN pip install uv
 
 RUN mkdir -p /flips
 COPY --from=build /flips/Flips-198/flips /flips/flips
 
-RUN mkdir -p /randomizer/data
-RUN touch /randomizer/data/base2current.json
-RUN chown $APP_UID:$APP_UID /randomizer/data/base2current.json
+COPY alttp.sfc /baserom/alttp.sfc
 
-RUN mkdir -p /dungeon_map_randomizer/data
-RUN touch /dungeon_map_randomizer/data/base2current.json
-RUN chown $APP_UID:$APP_UID /dungeon_map_randomizer/data/base2current.json
-
-USER $APP_UID
-
-RUN python3 -m ensurepip --upgrade
-
+# base generator
 WORKDIR /randomizer
-COPY alttp.sfc .
 
-COPY BaseRandomizer/resources/app/meta/manifests/pip_requirements.txt requirements.txt
-RUN python3 -m pip install -r requirements.txt
+COPY BaseRandomizer/pyproject.toml .
+RUN uv sync
 
 COPY BaseRandomizer/ .
 
+# apr2025 generator
 WORKDIR /apr2025_randomizer
+
+COPY Apr2025Randomizer/pyproject.toml .
+RUN uv sync
+
 COPY Apr2025Randomizer/ .
 
-WORKDIR /dungeon_map_randomizer
+# beta generator
+WORKDIR /beta_randomizer
 
-COPY DungeonMapRandomizer/ .
+COPY BetaRandomizer/pyproject.toml .
+RUN uv sync
 
+COPY BetaRandomizer/ .
+
+# web server
 WORKDIR /app
 COPY --from=build /app/publish .
 COPY ALttPRandomizer/appsettings.Docker.json appsettings.json

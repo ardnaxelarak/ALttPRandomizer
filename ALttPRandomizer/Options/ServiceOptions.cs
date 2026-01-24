@@ -4,11 +4,15 @@
 
     public class ServiceOptions {
         public string Baserom { get; set; } = null!;
-        public string PythonPath { get; set; } = null!;
         public string FlipsPath { get; set; } = null!;
-        public IList<string> AllowedCors { get; set; } = new List<string>();
-        public AzureSettings AzureSettings { get; set; } = new AzureSettings();
-        public IDictionary<string, string> RandomizerPaths { get; set; } = new Dictionary<string, string>();
+        public List<string> AllowedCors { get; set; } = [];
+        public AzureSettings AzureSettings { get; set; } = new();
+        public Dictionary<string, GeneratorSettings> Generators { get; set; } = new();
+    }
+
+    public class GeneratorSettings {
+        public string WorkingDirectory { get; set; } = null!;
+        public List<string> RandomizerCommand { get; set; } = [];
     }
 
     public class AzureSettings {

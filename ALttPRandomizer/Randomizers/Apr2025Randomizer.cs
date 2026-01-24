@@ -9,6 +9,7 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
 
@@ -40,15 +41,14 @@
         public async Task Randomize(string id, SeedSettings settings, bool uploadSettings = true) {
             Logger.LogDebug("Recieved request for id {id} to randomize settings {@settings}", id, settings);
 
-            var start = new ProcessStartInfo() {
-                FileName = Configuration.PythonPath,
-                WorkingDirectory = Configuration.RandomizerPaths[Name],
+            var generatorSettings = this.Configuration.Generators[Name];
+            var start = new ProcessStartInfo(generatorSettings.RandomizerCommand[0], generatorSettings.RandomizerCommand.Skip(1)) {
+                WorkingDirectory = generatorSettings.WorkingDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
 
             var args = start.ArgumentList;
-            args.Add("EntranceRandomizer.py");
             args.Add("--rom");
             args.Add(Configuration.Baserom);
 
@@ -58,15 +58,11 @@
             args.Add("--outputname");
             args.Add(id);
 
-            args.Add("--json_spoiler");
-
-            args.Add("--quickswap");
-
             foreach (var arg in SettingsProcessor.GetSettings(Instance, settings)) {
                 args.Add(arg);
             }
 
-            Logger.LogInformation("Randomizing with args: {args}", string.Join(" ", args));
+            Logger.LogInformation("Randomizing {id} with command: {command} {args}", id, start.FileName, string.Join(" ", args.Select(arg => arg.Contains(" ") ? $"\"{arg}\"" : arg)));
 
             var generating = string.Format("{0}/generating", id);
             await AzureStorage.UploadFile(generating, BinaryData.Empty);

@@ -42,21 +42,27 @@
     internal class NoSettingNameAttribute : RandomizerSpecificAttribute {
         public NoSettingNameAttribute() : base(null) { }
 
-        public NoSettingNameAttribute(RandomizerInstance[] randomizers) : base(randomizers) { }
+        public NoSettingNameAttribute(params RandomizerInstance[] randomizers) : base(randomizers) { }
     }
 
+    internal class IgnoreSettingAttribute : RandomizerSpecificAttribute {
+        public IgnoreSettingAttribute(params RandomizerInstance[] randomizers) : base(randomizers) { }
+    }
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple=true)]
     internal class AdditionalSettingAttribute : RandomizerSpecificAttribute {
-        public AdditionalSettingAttribute(string setting) : base(null) {
-            this.Setting = setting;
+        public AdditionalSettingAttribute(params string[] settings) : base(null) {
+            this.Settings = settings;
         }
 
-        public AdditionalSettingAttribute(RandomizerInstance[] randomizers, string setting) : base(randomizers) {
-            this.Setting = setting;
+        public AdditionalSettingAttribute(RandomizerInstance[] randomizers, params string[] settings) : base(randomizers) {
+            this.Settings = settings;
         }
 
-        public string Setting { get; }
+        public string[] Settings { get; }
     }
 
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple=true)]
     internal class AddStartingItemsAttribute : RandomizerSpecificAttribute {
         public AddStartingItemsAttribute(params string[] items) : base(null) {
             this.Items = items;
@@ -69,6 +75,7 @@
         public string[] Items { get; }
     }
 
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple=true)]
     internal class RequiredSettingAttribute : RandomizerSpecificAttribute {
         public RequiredSettingAttribute(params object[] values) : base(null) {
             this.Values = values;
@@ -81,6 +88,7 @@
         public object[] Values { get; }
     }
 
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple=true)]
     internal class ForbiddenSettingAttribute : RandomizerSpecificAttribute {
         public ForbiddenSettingAttribute(params object[] values) : base(null) {
             this.Values = values;

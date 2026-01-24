@@ -1,4 +1,5 @@
-scripts/
+Dockerfile
+justfile
 
 ALttPRandomizer/appsettings.json
 ALttPRandomizer/appsettings.Development.json
@@ -10,4 +11,10 @@ ALttPRandomizer/[Bb]in
 */DR_*
 */ER_*
 */OR_*
-*/data/base2current.json
+*/GK_*
+*.sfc
+*_Spoiler.txt
+
+!alttp.sfc
+
+# */data/base2current.json

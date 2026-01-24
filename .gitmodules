@@ -1,12 +1,12 @@
-[submodule "ALttPDoorRandomizer"]
-	path = ALttPDoorRandomizer
-	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer
 [submodule "BaseRandomizer"]
 	path = BaseRandomizer
-	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer
+	url = https://git.gwaa.kiwi/alttpr-gwaa-kiwi/alttpr-python
+	branch = GwaaKiwi
 [submodule "Apr2025Randomizer"]
 	path = Apr2025Randomizer
-	url = https://github.com/ardnaxelarak/ALttPDoorRandomizer
-[submodule "DungeonMapRandomizer"]
-	path = DungeonMapRandomizer
-	url = git@github.com:ardnaxelarak/ALttPDoorRandomizer
+	url = https://git.gwaa.kiwi/alttpr-gwaa-kiwi/alttpr-python
+	branch = apr_2025
+[submodule "BetaRandomizer"]
+	path = BetaRandomizer
+	url = https://git.gwaa.kiwi/alttpr-gwaa-kiwi/alttpr-python
+	branch = DungeonMap

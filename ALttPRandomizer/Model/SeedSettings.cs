@@ -26,20 +26,24 @@
         public Goal Goal { get; set; } = Goal.Ganon;
 
         [SettingName("crystals_ganon")]
+        [IgnoreSetting(Apr2025)]
         public EntryRequirement CrystalsGanon { get; set; } = EntryRequirement.Crystals7;
 
         [SettingName("bosses_ganon")]
-        [NoSettingName([Apr2025, Base])]
+        [IgnoreSetting(Apr2025, Base)]
         public BossRequirement BossesGanon { get; set; } = BossRequirement.Bosses8of10;
+
+        [NoSettingName]
+        [IgnoreSetting(Apr2025)]
+        public TriforceRequirement TriforcePieces { get; set; } = TriforceRequirement.Triforce20of30;
 
         [SettingName("crystals_gt")]
         [JsonPropertyName("crystals_gt")]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public EntryRequirement CrystalsGT { get; set; } = EntryRequirement.Crystals7;
 
         [SettingName("ganon_item")]
-        [RequiredSetting([Apr2025], GanonItem.Silver)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public GanonItem GanonItem { get; set; } = GanonItem.Silver;
 
         [SettingName("shuffle")]
@@ -47,32 +51,27 @@
         public EntranceShuffle EntranceShuffle { get; set; } = EntranceShuffle.Vanilla;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], LinksHouse.Vanilla)]
+        [IgnoreSetting(Apr2025)]
         public LinksHouse LinksHouse { get; set; } = LinksHouse.Vanilla;
 
         [SettingName("skullwoods")]
-        [RequiredSetting([Apr2025], SkullWoodsShuffle.Original)]
-        [NoSettingName([Apr2025])]
-        public SkullWoodsShuffle SkullWoods { get; set; } = SkullWoodsShuffle.Original;
+        [IgnoreSetting(Apr2025)]
+        public SkullWoodsShuffle SkullWoods { get; set; } = SkullWoodsShuffle.Default;
 
         [SettingName("linked_drops")]
-        [RequiredSetting([Apr2025], LinkedDrops.Unset)]
-        [NoSettingName([Apr2025])]
-        public LinkedDrops LinkedDrops { get; set; } = LinkedDrops.Unset;
+        [IgnoreSetting(Apr2025)]
+        public LinkedDrops LinkedDrops { get; set; } = LinkedDrops.Default;
 
         [SettingName("shufflebosses")]
-        [RequiredSetting([Apr2025], BossShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public BossShuffle BossShuffle { get; set; } = BossShuffle.Vanilla;
 
         [SettingName("shuffleenemies")]
-        [RequiredSetting([Apr2025], EnemyShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public EnemyShuffle EnemyShuffle { get; set; } = EnemyShuffle.Vanilla;
 
         [SettingName("shuffle_damage_table")]
-        [RequiredSetting([Apr2025], DamageTableShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DamageTableShuffle DamageTableShuffle { get; set; } = DamageTableShuffle.Vanilla;
 
         [SettingName("keyshuffle")]
@@ -81,44 +80,37 @@
         public KeyLocations SmallKeys { get; set; } = KeyLocations.Dungeon;
 
         [SettingName("bigkeyshuffle")]
-        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DungeonItemLocations BigKeys { get; set; } = DungeonItemLocations.Dungeon;
 
         [SettingName("mapshuffle")]
-        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DungeonItemLocations Maps { get; set; } = DungeonItemLocations.Dungeon;
 
         [SettingName("compassshuffle")]
-        [RequiredSetting([Apr2025], DungeonItemLocations.Dungeon)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DungeonItemLocations Compasses { get; set; } = DungeonItemLocations.Dungeon;
 
         [SettingName("showloot")]
-        [RequiredSetting([Apr2025, Base], ShowLoot.Never)]
-        [NoSettingName([Apr2025, Base])]
+        [IgnoreSetting(Apr2025, Base)]
         public ShowLoot ShowLoot { get; set; } = ShowLoot.Never;
 
         [SettingName("showmap")]
-        [RequiredSetting([Apr2025, Base], ShowMap.Map)]
-        [NoSettingName([Apr2025, Base])]
+        [IgnoreSetting(Apr2025, Base)]
         public ShowMap ShowMap { get; set; } = ShowMap.Map;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], ShopShuffle.Vanilla)]
+        [IgnoreSetting(Apr2025)]
         public ShopShuffle ShopShuffle { get; set; } = ShopShuffle.Vanilla;
 
-        [RequiredSetting([Apr2025], DropShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DropShuffle DropShuffle { get; set; } = DropShuffle.Vanilla;
 
-        [RequiredSetting([Apr2025], Pottery.Vanilla)]
-        [NoSettingName([Apr2025])]
-        public Pottery Pottery { get; set; } = Pottery.Vanilla;
+        [SettingName("pottery")]
+        [IgnoreSetting(Apr2025)]
+        public PotShuffle PotShuffle { get; set; } = PotShuffle.Vanilla;
 
-        [RequiredSetting([Apr2025], PrizeShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public PrizeShuffle PrizeShuffle { get; set; } = PrizeShuffle.Vanilla;
 
         [NoSettingName]
@@ -126,57 +118,55 @@
         public BootsSettings Boots { get; set; } = BootsSettings.Normal;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], FluteSettings.Normal)]
+        [IgnoreSetting(Apr2025)]
         public FluteSettings Flute { get; set; } = FluteSettings.Normal;
 
         [SettingName("dark_rooms")]
-        [RequiredSetting([Apr2025], DarkRoomSettings.RequireLamp)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DarkRoomSettings DarkRooms { get; set; } = DarkRoomSettings.RequireLamp;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], BombSettings.Normal)]
+        [IgnoreSetting(Apr2025)]
         public BombSettings Bombs { get; set; } = BombSettings.Normal;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], BookSettings.Normal)]
+        [IgnoreSetting(Apr2025)]
         public BookSettings Book { get; set; } = BookSettings.Normal;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], MirrorSettings.Normal)]
+        [IgnoreSetting(Apr2025)]
         public MirrorSettings Mirror { get; set; } = MirrorSettings.Normal;
 
         [SettingName("door_shuffle")]
-        [RequiredSetting([Apr2025], DoorShuffle.Vanilla)]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DoorShuffle DoorShuffle { get; set; } = DoorShuffle.Vanilla;
 
         [SettingName("intensity")]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DoorLobbies Lobbies { get; set; } = DoorLobbies.Vanilla;
 
         [SettingName("door_type_mode")]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DoorTypeMode DoorTypeMode { get; set; } = DoorTypeMode.Big;
 
         [SettingName("trap_door_mode")]
-        [NoSettingName([Apr2025])]
-        public TrapDoorMode TrapDoorMode { get; set; } = TrapDoorMode.Optional;
+        [IgnoreSetting(Apr2025)]
+        public TrapDoorMode TrapDoorMode { get; set; } = TrapDoorMode.Some;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], FollowerShuffle.Vanilla)]
+        [IgnoreSetting(Apr2025)]
         public FollowerShuffle FollowerShuffle { get; set; } = FollowerShuffle.Vanilla;
 
         [SettingName("ow_fluteshuffle")]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public FluteShuffle FluteShuffle { get; set; } = FluteShuffle.Vanilla;
 
         [NoSettingName]
-        [RequiredSetting([Apr2025], TileSwap.Vanilla)]
+        [IgnoreSetting(Apr2025)]
         public TileSwap TileSwap { get; set; } = TileSwap.Vanilla;
 
         [SettingName("damage_challenge")]
-        [NoSettingName([Apr2025])]
+        [IgnoreSetting(Apr2025)]
         public DamageChallengeMode DamageChallenge { get; set; } = DamageChallengeMode.Normal;
 
         [NoSettingName]
@@ -187,7 +177,7 @@
     {
         [RandomizerName(BaseRandomizer.Name)] Base,
         [RandomizerName(Apr2025Randomizer.Name)] Apr2025,
-        [RandomizerName(BaseRandomizer.DungeonMapName)] DungeonMap,
+        [RandomizerName(BaseRandomizer.BetaName)] Beta,
     }
 
     public enum RaceMode {
@@ -232,6 +222,14 @@
         [JsonStringEnumMemberName("6")] [SettingName("6")] Crystals6 = 6,
         [JsonStringEnumMemberName("7")] [SettingName("7")] Crystals7 = 7,
         Random,
+    }
+
+    public enum TriforceRequirement {
+        [JsonStringEnumMemberName("8of10")] [AdditionalSetting("--triforce_goal=8", "--triforce_pool=10")] Triforce8of10,
+        [JsonStringEnumMemberName("20of30")] [AdditionalSetting("--triforce_goal=20", "--triforce_pool=30")] Triforce20of30,
+        [JsonStringEnumMemberName("67of100")] [AdditionalSetting("--triforce_goal=67", "--triforce_pool=100")] Triforce67of100,
+        [JsonStringEnumMemberName("125of175")] [AdditionalSetting("--triforce_goal=125", "--triforce_pool=175")] Triforce125of175,
+        [JsonStringEnumMemberName("400of500")] [AdditionalSetting("--triforce_goal=400", "--triforce_pool=500")] Triforce400of500,
     }
 
     public enum BossRequirement {
@@ -294,14 +292,14 @@
     }
 
     public enum SkullWoodsShuffle {
-        Original,
-        Restricted,
+        [SettingName("original")] Default,
+        [SettingName("restricted")] VanillaDrops,
         Loose,
-        FollowLinked,
+        [SettingName("follow_linked")] Chaos,
     }
 
     public enum LinkedDrops {
-        Unset,
+        [SettingName("unset")] Default,
         Linked,
         Independent,
     }
@@ -349,7 +347,7 @@
         Underworld,
     }
 
-    public enum Pottery {
+    public enum PotShuffle {
         [SettingName("none")] Vanilla,
         [AdditionalSetting("--colorizepots")] Keys,
         [AdditionalSetting("--colorizepots")] Cave,
@@ -358,7 +356,7 @@
         [AdditionalSetting("--colorizepots")] Clustered,
         [AdditionalSetting("--colorizepots")] NonEmpty,
         [AdditionalSetting("--colorizepots")] Dungeon,
-        Lottery,
+        [SettingName("lottery")] All,
     }
 
     public enum PrizeShuffle {
@@ -405,7 +403,7 @@
         [SettingName("always_light_cone")] AlwaysLightCone,
         [SettingName("no_dark_rooms")] NoDarkRooms,
         [SettingName("require_lamp")] [AddStartingItems("Lamp")] StartingLamp,
-        [SettingName("always_in_logic")] AlwaysInLogic,
+        [SettingName("always_in_logic")] DarkInLogic,
     }
 
     public enum BombSettings {
@@ -440,7 +438,7 @@
 
     public enum TrapDoorMode {
         Vanilla,
-        Optional,
+        [SettingName("optional")] Some,
         Boss,
         [SettingName("oneway")] RemoveAll,
     }

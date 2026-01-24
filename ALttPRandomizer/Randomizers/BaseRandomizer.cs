@@ -16,7 +16,7 @@
 
     public class BaseRandomizer : IRandomizer {
         public const string Name = "base";
-        public const string DungeonMapName = "dungeon_map";
+        public const string BetaName = "beta";
 
         public const int MULTI_TRIES = 100;
         public const int SINGLE_TRIES = 5;
@@ -57,7 +57,7 @@
             }
         }
 
-        private IList<string> GetArgs(SeedSettings settings) {
+        private List<string> GetArgs(SeedSettings settings) {
             var args = new List<string>() {
                 "--reduce_flashing",
                 "--quickswap",
@@ -73,26 +73,25 @@
             }
 
             if (settings.DoorShuffle != DoorShuffle.Vanilla || settings.DropShuffle != DropShuffle.Vanilla
-                || (settings.Pottery != Pottery.Vanilla && settings.Pottery != Pottery.Cave)) {
+                || (settings.PotShuffle != PotShuffle.Vanilla && settings.PotShuffle != PotShuffle.Cave)) {
                 args.Add("--dungeon_counters=on");
             }
 
             return args;
         }
 
-        private async Task StartProcess(string randomizerName, string id, IEnumerable<string> settings, Func<int, Task> completed) {
-            var start = new ProcessStartInfo() {
-                FileName = Configuration.PythonPath,
-                WorkingDirectory = Configuration.RandomizerPaths[randomizerName],
+        private async Task StartProcess(string generatorName, string id, IEnumerable<string> settings, Func<int, Task> completed) {
+            var generatorSettings = this.Configuration.Generators[generatorName];
+
+            var start = new ProcessStartInfo(generatorSettings.RandomizerCommand[0], generatorSettings.RandomizerCommand.Skip(1)) {
+                WorkingDirectory = generatorSettings.WorkingDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
 
             var args = start.ArgumentList;
-            args.Add("DungeonRandomizer.py");
             args.Add("--rom");
             args.Add(Configuration.Baserom);
-            args.Add("--bps");
 
             args.Add("--outputpath");
             args.Add(Path.GetTempPath());
@@ -100,13 +99,11 @@
             args.Add("--outputname");
             args.Add(id);
 
-            args.Add("--spoiler=json");
-
             foreach (var arg in settings) {
                 args.Add(arg);
             }
 
-            Logger.LogInformation("Randomizing {id} with args: {args}", id, string.Join(" ", args.Select(arg => $"\"{arg}\"")));
+            Logger.LogInformation("Randomizing {id} with command: {command} {args}", id, start.FileName, string.Join(" ", args.Select(arg => arg.Contains(" ") ? $"\"{arg}\"" : arg)));
 
             var generating = string.Format("{0}/generating", id);
             await AzureStorage.UploadFile(generating, BinaryData.Empty);
@@ -114,8 +111,16 @@
             var process = Process.Start(start) ?? throw new GenerationFailedException("Process failed to start.");
             process.EnableRaisingEvents = true;
 
-            process.OutputDataReceived += (_, args) => Logger.LogInformation("Randomizer {id} STDOUT: {output}", id, args.Data);
-            process.ErrorDataReceived += (_, args) => Logger.LogInformation("Randomizer {id} STDERR: {output}", id, args.Data);
+            process.OutputDataReceived += (_, args) => {
+                if (args.Data != null) {
+                    Logger.LogInformation("Randomizer {id} STDOUT: {output}", id, args.Data);
+                }
+            };
+            process.ErrorDataReceived += (_, args) => {
+                if (args.Data != null) {
+                    Logger.LogInformation("Randomizer {id} STDERR: {output}", id, args.Data);
+                }
+            };
 
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
@@ -270,7 +275,7 @@
                 Logger.LogInformation("Finished uploading multiworld id {id}", id);
             } finally {
                 var generating = string.Format("{0}/generating", id);
-                var deleteGenerating = AzureStorage.DeleteFile(generating);
+                await AzureStorage.DeleteFile(generating);
             }
         }
 
@@ -293,11 +298,9 @@
             return JsonSerializer.SerializeToDocument(processed, JsonOptions.Default);
         }
 
-        private async Task GenerationFailed(string id, int exitcode) {
+        private async Task GenerationFailed(string id, int _) {
             var generating = string.Format("{0}/generating", id);
-            var deleteGenerating = AzureStorage.DeleteFile(generating);
-
-            await Task.WhenAll(deleteGenerating);
+            await AzureStorage.DeleteFile(generating);
         }
     }
 }
