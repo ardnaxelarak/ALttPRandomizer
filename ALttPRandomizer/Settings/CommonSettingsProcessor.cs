@@ -72,17 +72,17 @@
             }
         }
 
-        public string GetRandomizerName(RandomizerInstance randomizer)
+        internal GeneratorSettingsAttribute GetGeneratorSettings(RandomizerInstance randomizer)
         {
             var fi = typeof(RandomizerInstance).GetField(randomizer.ToString(), BindingFlags.Static | BindingFlags.Public);
 
-            var randomizerKey = fi?.GetCustomAttribute<RandomizerNameAttribute>()?.Name;
+            var settings = fi?.GetCustomAttribute<GeneratorSettingsAttribute>();
 
-            if (randomizerKey == null) {
-                throw new InvalidSettingsException("Invalid randomizer: {0}", randomizerKey);
+            if (settings == null) {
+                throw new InvalidSettingsException("Invalid randomizer: {0}", randomizer);
             }
 
-            return randomizerKey;
+            return settings;
         }
     }
 

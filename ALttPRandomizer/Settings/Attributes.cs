@@ -3,12 +3,25 @@
     using System;
     using System.Linq;
 
-    internal class RandomizerNameAttribute : Attribute {
-        public RandomizerNameAttribute(string name) {
+    [AttributeUsage(AttributeTargets.Field)]
+    internal class GeneratorSettingsAttribute : Attribute {
+        public GeneratorSettingsAttribute(string name, string prefix, params string[] args) {
             this.Name = name;
+            this.Prefix = prefix;
+            this.Args = args;
+        }
+
+        public GeneratorSettingsAttribute(string name, string prefix, bool requireFlips, params string[] args) {
+            this.Name = name;
+            this.Prefix = prefix;
+            this.Args = args;
+            this.RequireFlips = requireFlips;
         }
 
         public string Name { get; }
+        public string Prefix { get; }
+        public string[] Args { get; }
+        public bool RequireFlips { get; } = false;
     }
 
     internal abstract class RandomizerSpecificAttribute : Attribute {

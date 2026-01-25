@@ -2,6 +2,6 @@
     using System;
 
     public class GenerationFailedException : Exception {
-        public GenerationFailedException(string message) : base(message) { }
+        public GenerationFailedException(string message, params string[] args) : base(string.Format(message, args)) { }
     }
 }

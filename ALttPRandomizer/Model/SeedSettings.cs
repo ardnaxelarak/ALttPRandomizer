@@ -173,11 +173,10 @@
         public Hints Hints { get; set; } = Hints.Off;
     }
 
-    public enum RandomizerInstance
-    {
-        [RandomizerName(BaseRandomizer.Name)] Base,
-        [RandomizerName(Apr2025Randomizer.Name)] Apr2025,
-        [RandomizerName(BaseRandomizer.BetaName)] Beta,
+    public enum RandomizerInstance {
+        [GeneratorSettings("base", "OR_", "--bps", "--spoiler=json")] Base,
+        [GeneratorSettings("beta", "OR_","--bps", "--spoiler=json")] Beta,
+        [GeneratorSettings("apr2025", "ER_", requireFlips: true, "--json_spoiler")] Apr2025,
     }
 
     public enum RaceMode {
